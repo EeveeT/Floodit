@@ -19,7 +19,7 @@ typedef struct{
   Colour_t *array2d;
 } Board_t;
 
-int makeBoard(unsigned char len);
+int makeBoard(Board_t *board_ptr, unsigned char len);
 void cleanUpBoard(Board_t *board_ptr);
 void setColourAt(Board_t *board_ptr, unsigned char x, unsigned char y, Colour_t colour);
 Colour_t getColourAt(Board_t *board_ptr, unsigned char x, unsigned char y);

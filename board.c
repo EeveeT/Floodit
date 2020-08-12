@@ -1,9 +1,8 @@
 #include "board.h"
 
-int makeBoard(unsigned char len){
+int makeBoard(Board_t *board_ptr, unsigned char len){
 
   /* We create the len variable to avoid long lines of code*/
-  Board_t *board_ptr;
   len = board_ptr->length;
   /* malloc can only give us a strip in memory, we need length*length for the
     total number of cells (the complete table as one long strip), and we also
@@ -22,6 +21,7 @@ int makeBoard(unsigned char len){
   return 1;
 
 }
+
 /* Once we no longer need the board, we need to ensure we free the memory
    allocated for it
 
