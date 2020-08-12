@@ -1,3 +1,10 @@
+/*
+  - In this version, there are warnings and errors and incompatible pointer
+    types being passed around.
+  - This verison is not good and is full of awful horrible bugs that I find
+    myself in quite a mess
+*/
+
 #include "board.h"
 
 int main (int argc, char *argv[]){
