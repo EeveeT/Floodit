@@ -1,6 +1,6 @@
 #include "board.h"
 
-int makeBoard(Board_t *board_ptr, unsigned char len){
+void makeBoard(Board_t *board_ptr, unsigned char len){
 
   /* We create the len variable to avoid long lines of code*/
   len = board_ptr->length;
@@ -17,8 +17,6 @@ int makeBoard(Board_t *board_ptr, unsigned char len){
     fprintf(stderr, "Error, could not allocate memory for the board.\n");
     exit(-1);
   }
-
-  return 1;
 
 }
 

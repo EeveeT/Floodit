@@ -2,13 +2,13 @@
 
 int main (int argc, char *argv[]){
 
-  Board_t *board;
-  board->length = DEFAULT_BOARD_SIZE;
+  Board_t board;
+  board.length = DEFAULT_BOARD_SIZE;
   /*The & enables the function to access the address in memory
     to where board is stored */
-  if(makeBoard(board, board->length) != 1){
+  /*if(!makeBoard(&board, board.length)){
     fprintf(stderr, "This should never have happened\n");
-  }
+  }*/
   print2dArray(&board);
 
   /*When user quits or wins, need to cleanUpBoard() */
@@ -19,12 +19,12 @@ int main (int argc, char *argv[]){
 
 void handleArguements(int argc, char* argv[]){
 
-  Board_t *board_ptr;
+  Board_t board;
 
   switch (argc){
     case 1:
       if(argc == 1){
-        makeBoard(&board_ptr, DEFAULT_BOARD_SIZE);
+        makeBoard(&board, DEFAULT_BOARD_SIZE);
       }
       break;
     case 2:
