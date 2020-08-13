@@ -37,40 +37,15 @@ void handleArguements(int argc, char* argv[], Board_t *board_ptr){
       break;
     case 2:
       /* boardSize 1-9  incomplete*/
-      printf("Trying to open file %s\n",argv[1]);
+      printf("Trying to open file %s\n", argv[1]);
         file = fopen(argv[1], "r");
         printf("File = %p \n", file);
         /* To check if argc == 2 is either a file or an int, we try to
           open a file by default to check if there is a file or not*/
-        if(file == NULL){
-          /* If we get to here, we now need to check if argv[1] is a single int */
-          if(strlen(argv[1]) != 1){
-            fprintf(stderr, "Incorrect argument, try to use a number between 2-9");
-            fprintf(stderr, "Or you attempted to use a .txt file that does not exist");
-            exit(-1);
+          /*Checking the first char of argv[1] by indexing [0] */
+          if(file == NULL){
+            handleSecondArgumentNumber(argc, argv, &board_ptr);
           }
-          else{
-            /*Checking the first char of argv[1] by indexing [0] */
-            if(isdigit(argv[1][0])){
-              /* initialise board with number stored in argv[1]
-                 and to convert that number from a char to an actual
-                 numeric value, we take away the ASCII character '0'
-              */
-              printf("Argument given is: %c\n",argv[1][0]);
-              board_ptr->length = argv[1][0] - '0';
-              if(board_ptr->length < 2){
-                fprintf(stderr, "0-1 is an invalid input");
-                exit(-1);
-              }
-              printf("Converted to an int %c\n",board_ptr->length);
-              makeBoard(board_ptr);
-              printf("valid number input found\n");
-            }
-            else{
-              fprintf(stderr, "Failed: You passed in a letter which is an \
-              invalid text file, please try a number");
-              exit(-1);
-            }
 
       break;
     case 3:
@@ -96,8 +71,8 @@ void handleArguements(int argc, char* argv[], Board_t *board_ptr){
 
       }
     }
-  }
-}
+
+
  /*If the board has not been malloced, will crash.
   - check if array == NULL
   - check len > 1
@@ -121,6 +96,40 @@ void print2dArray(Board_t *board_ptr){
     printf("\n");
   }
 }
+
+void handleSecondArgumentNumber(int argc, char* argv[], Board_t *board_ptr){
+  /*Checking the first char of argv[1] by indexing [0] */
+  if(file == NULL){
+    /* If we get to here, we now need to check if argv[1] is a single int */
+    if(strlen(argv[1]) != 1){
+      fprintf(stderr, "Incorrect argument, try to use a number between 2-9");
+      fprintf(stderr, "Or you attempted to use a .txt file that does not exist");
+      exit(-1);
+    }
+  if(isdigit(argv[1][0])){
+    /* initialise board with number stored in argv[1]
+       and to convert that number from a char to an actual
+       numeric value, we take away the ASCII character '0'
+    */
+    printf("Argument given is: %c\n",argv[1][0]);
+    board_ptr->length = argv[1][0] - '0';
+    if(board_ptr->length < 2){
+      fprintf(stderr, "0-1 is an invalid input");
+      exit(-1);
+    }
+    printf("Converted to an int %c\n",board_ptr->length);
+    makeBoard(board_ptr);
+    printf("valid number input found\n");
+  }
+  else{
+      fprintf(stderr, "Failed: You passed in a letter which is an \
+      invalid text file, please try a number");
+      exit(-1);
+    }
+  }
+}
+
+
 /*
 void fillBoard(Board_t *board_ptr, unsigned char length){
 

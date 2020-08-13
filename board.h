@@ -28,3 +28,4 @@ Colour_t colourAt(Board_t *board_ptr, unsigned char x, unsigned char y);
 unsigned int getIndexFromXY(Board_t *board_ptr, unsigned char x, unsigned char y);
 void print2dArray(Board_t *board_ptr);
 void handleArguements(int argc, char* argv[], Board_t *board_ptr);
+void handleSecondArgumentNumber(int argc, char* argv[], Board_t *board_ptr);
