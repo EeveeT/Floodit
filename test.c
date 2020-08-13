@@ -2,8 +2,13 @@
 
 int main (int argc, char *argv[]){
 
+/*  This is the real board we always want to use, hence why it is in main,
+    and this is why we always have to send a pointer to other functions to
+    THIS board here in main
+*/
   Board_t board;
   board.length = DEFAULT_BOARD_SIZE;
+  handleArguements(argc, argv, &board);
   /*The & enables the function to access the address in memory
     to where board is stored */
   /*if(!makeBoard(&board, board.length)){
@@ -16,15 +21,18 @@ int main (int argc, char *argv[]){
 
   return 0;
 }
-
-void handleArguements(int argc, char* argv[]){
-
-  Board_t board;
+/*
+  Whenever we see Board_t *board_ptr, think of it like a "tunnel" to
+  the orignal board up in main
+*/
+void handleArguements(int argc, char* argv[], Board_t *board_ptr){
 
   switch (argc){
     case 1:
       if(argc == 1){
-        makeBoard(&board, DEFAULT_BOARD_SIZE);
+        board_ptr->length = DEFAULT_BOARD_SIZE;
+        /*Need to check for a NULL pointer later on*/
+        makeBoard(board_ptr);
       }
       break;
     case 2:

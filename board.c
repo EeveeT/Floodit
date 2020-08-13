@@ -1,9 +1,18 @@
 #include "board.h"
 
-void makeBoard(Board_t *board_ptr, unsigned char len){
-
+void makeBoard(Board_t *board_ptr){
   /* We create the len variable to avoid long lines of code*/
+  unsigned char len;
   len = board_ptr->length;
+  if(len == 0 || len > MAX_BOARD_SIZE){
+    /*If length is invalid, we haven't used malloc, so to be safe,
+      we set the array to NULL so we know what it is and this will be caught
+      later as an error
+    */
+    board_ptr->array2d = NULL;
+    return;
+  }
+
   /* malloc can only give us a strip in memory, we need length*length for the
     total number of cells (the complete table as one long strip), and we also
     need to calculate how much memory each "Colour_t" will take up
@@ -17,7 +26,6 @@ void makeBoard(Board_t *board_ptr, unsigned char len){
     fprintf(stderr, "Error, could not allocate memory for the board.\n");
     exit(-1);
   }
-
 }
 
 /* Once we no longer need the board, we need to ensure we free the memory
