@@ -44,7 +44,7 @@ void handleArguements(int argc, char* argv[], Board_t *board_ptr){
           open a file by default to check if there is a file or not*/
         if(file == NULL){
           /* If we get to here, we now need to check if argv[1] is a single int */
-          handleSecondArgumentNumber(argc, argv, board_ptr);
+          handleSecondArgumentLength(argc, argv, board_ptr);
           makeBoard(board_ptr);
         }
 
@@ -55,7 +55,7 @@ void handleArguements(int argc, char* argv[], Board_t *board_ptr){
         - As with case two, get the user input for argv[1][0] and argv [2][0]
         - Check if the inputs from the user are valid and the set the board up!
        */
-        handleSecondArgumentNumber(argc, argv, board_ptr);
+        handleSecondArgumentLength(argc, argv, board_ptr);
         makeBoard(board_ptr);
 
       break;
@@ -75,7 +75,7 @@ void print2dArray(Board_t *board_ptr){
   unsigned int index;
   unsigned char len = board_ptr->length;
 
-  printf("Printing board...\n");
+  printf("Board length: %d\n", len);
 
   for(r = 0; r < len; r++){
     for(c = 0; c < len; c++){
@@ -88,30 +88,56 @@ void print2dArray(Board_t *board_ptr){
   }
 }
 
-void handleSecondArgumentNumber(int argc, char* argv[], Board_t *board_ptr){
-  /*Checks that the input paramater is valid */
-  if(strlen(argv[1]) != 1){
-    fprintf(stderr, "Incorrect argument, try to use a number between 2-9.");
+void handleSecondArgumentLength(int argc, char* argv[], Board_t *board_ptr){
+
+  int length;
+
+  /*Checks that the input paramater is valid by seeing if it is a single
+    character or number*/
+  if(strlen(argv[1]) > 2){
+    fprintf(stderr, "Incorrect argument, try to use a number between 2-20.\n");
     exit(-1);
   }
   else{
-    if(isdigit(argv[1][0])){
-      printf("Argument given is: %c \n", argv[1][0]);
-      board_ptr->length = argv[1][0] - '0';
-      if(board_ptr->length < 2){
-        fprintf(stderr, "Board size too small, must be between 2-9.\n");
+    /*Checks to see if argv[1][0] is a numberic type */
+    if(isdigit(argv[1][0]) && isdigit(argv[1][1])){
+      printf("Argument given is: %c%c\n", argv[1][0], argv[1][1]);
+      /*
+        - We first convert the string passed down from argv[1]
+          to an interger using atoi(), see here for more details:
+          https://www.educative.io/edpresso/how-to-convert-a-string-to-an-integer-in-c
+          Then we type caste it to an unsigned char because length in Board_t
+          is an unsigned char type.
+      */
+      length = atoi(argv[1]);
+      board_ptr->length = (unsigned char)length;
+      printf("length is: %d\n", length);
+      
+      if(board_ptr->length < MIN_BOARD_SIZE){
+        fprintf(stderr, "Board size too small, must be between 2-20.\n");
+        exit(-1);
+      }
+      if(board_ptr->length >  MAX_BOARD_SIZE){
+        fprintf(stderr, "Board size too big, must be between 2-20\n");
         exit(-1);
       }
       printf("converted to an int %c\n",board_ptr->length);
     }
     else{
-      fprintf(stderr, "Failed: You passed in a letter which is an\n"
-      "invalid text file, please try a number. \n");
+      fprintf(stderr, "Failed: You passed in a large number or\n"
+      "letter which is an invalid text file, please try a number\n"
+      "between 2-20");
       exit(-1);
     }
   }
-
 }
+/*
+void handleThirdArgumentColours(int argv, char* argv[], Board_t *board_ptr){
+  if(strlen(argv[2] != 1)){
+    fprintf(stderr, "Incorrect input, try a number between 1-6");
+  }
+}
+*/
 /*
 void fillBoard(Board_t *board_ptr, unsigned char length){
 

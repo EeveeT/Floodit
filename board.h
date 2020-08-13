@@ -4,6 +4,7 @@
 #include <string.h>
 
 #define MAX_BOARD_SIZE 20
+#define MIN_BOARD_SIZE 2
 #define DEFAULT_BOARD_SIZE 14
 
 /*To keep things clearer, we can use Colour instead of unsigned char
@@ -28,4 +29,5 @@ Colour_t colourAt(Board_t *board_ptr, unsigned char x, unsigned char y);
 unsigned int getIndexFromXY(Board_t *board_ptr, unsigned char x, unsigned char y);
 void print2dArray(Board_t *board_ptr);
 void handleArguements(int argc, char* argv[], Board_t *board_ptr);
-void handleSecondArgumentNumber(int argc, char* argv[], Board_t *board_ptr);
+void handleSecondArgumentLength(int argc, char* argv[], Board_t *board_ptr);
+/*void handleThirdArgumentColours(int argv, char* argv[], Board_t *board_ptr);*/
