@@ -7,6 +7,8 @@ int main (int argc, char *argv[]){
     THIS board here in main
 */
   Board_t board;
+  int turnCounter = 0;
+  unsigned int userInput = 0;
   board.length = DEFAULT_BOARD_SIZE;
   handleArguements(argc, argv, &board);
   /*The & enables the function to access the address in memory
@@ -14,7 +16,13 @@ int main (int argc, char *argv[]){
   /*if(!makeBoard(&board, board.length)){
     fprintf(stderr, "This should never have happened\n");
   }*/
-  print2dArray(&board);
+  while(!checkIfWon(&board)){
+    turnCounter += 1;
+    userInput = captureInputTurn(&board, turnCounter);
+    printf("User input is: &u \n", userInput);
+    print2dArray(&board);
+  }
+
 
 /*
   - Populate from text FILE
@@ -54,6 +62,7 @@ void handleArguements(int argc, char* argv[], Board_t *board_ptr){
   switch (argc){
     case 1:
         board_ptr->length = DEFAULT_BOARD_SIZE;
+        board_ptr->maxColour = DEFAULT_NUM_COLOURS;
         /*Need to check for a NULL pointer later on*/
         makeBoard(board_ptr);
       break;
@@ -199,6 +208,7 @@ int readTxtFileToArray(Board_t *board_ptr, FILE *file){
   unsigned char value;
   int j;
   unsigned int index;
+  unsigned char maxValue = 0;
 /*
   Working form this website:
   https://www.tutorialspoint.com/c_standard_library/c_function_ftell.htm
@@ -321,6 +331,14 @@ int readTxtFileToArray(Board_t *board_ptr, FILE *file){
           ASCII value of that character */
         value = charArray[j] - '0';
         printf("value is: %d\n", value);
+        /*
+          To find the highest colour/number value, and therefore how
+          many different 'colours' there are, we can use the conditional
+          operator to get the highest number in the array.
+          https://www.geeksforgeeks.org/conditional-or-ternary-operator-in-c-c/
+        */
+        maxValue = maxValue > value ? maxValue : value;
+        printf("max number of colours is: %u\n", maxValue );
 
         if(value < 1 || value > 9){
           fprintf(stderr, "Numbers in file must be between 1-9\n");
@@ -329,6 +347,7 @@ int readTxtFileToArray(Board_t *board_ptr, FILE *file){
         else{
           index = getIndexFromXY(board_ptr, (unsigned char)c, (unsigned char) r);
           printf("Saving value(%d) into array..\n", value);
+          /*Puts all the values into the board from the file */
           board_ptr->array2d[index] = value;
           c++;
 
@@ -342,11 +361,27 @@ int readTxtFileToArray(Board_t *board_ptr, FILE *file){
         r++;
       }
     }
+    board_ptr->maxColour = maxValue;
     /*Text file has been transferred into a chunk of memory and now we
       are done with the charArray we used (as its easier to work with an array
       that directly with a text file), we need to free the memory we were using*/
     free(charArray);
     return 0;
+  }
+
+  unsigned int captureInputTurn(Board_t *board_ptr, int turnCounter){
+
+    unsigned int turnInputNum = 0;
+
+    printf("Turn %d : What number ? ", turnCounter);
+    scanf("%u", &turnInputNum);
+    printf("turn input is: %u\n", turnInputNum );
+    printf("board max colour is: %u\n", board_ptr->maxColour);
+    if(turnInputNum < MIN_NUM_COLOURS || turnInputNum > board_ptr->maxColour){
+      fprintf(stderr, "Invalid number: must be between 1-9\n");
+      exit(-1);
+    }
+    return turnInputNum;
   }
 
 

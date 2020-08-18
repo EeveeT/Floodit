@@ -2,6 +2,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define MAX_BOARD_SIZE 20
 #define MIN_BOARD_SIZE 2
@@ -41,6 +42,7 @@ typedef unsigned char Colour_t;
 typedef struct{
   unsigned char length;
   unsigned char maxColour;
+  /* N.B., think about renaming array2d as it's not 2d */
   Colour_t *array2d;
 } Board_t;
 
@@ -56,4 +58,7 @@ void handleArguements(int argc, char* argv[], Board_t *board_ptr);
 void handleSecondArgumentLength(int argc, char* argv[], Board_t *board_ptr);
 void fillBoardFromTxtFile(Board_t *board_ptr, FILE *file);
 int readTxtFileToArray(Board_t*board_ptr, FILE *file);
+bool checkIfWon(Board_t *board_ptr);
+unsigned int captureInputTurn(Board_t *board_ptr, int turnCounter);
+
 /*void handleThirdArgumentColours(int argv, char* argv[], Board_t *board_ptr);*/
