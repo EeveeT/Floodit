@@ -55,10 +55,12 @@ Colour_t colourAt(Board_t *board_ptr, unsigned char x, unsigned char y);
 unsigned int getIndexFromXY(Board_t *board_ptr, unsigned char x, unsigned char y);
 void print2dArray(Board_t *board_ptr);
 void handleArguements(int argc, char* argv[], Board_t *board_ptr);
-void handleSecondArgumentLength(int argc, char* argv[], Board_t *board_ptr);
+void handleSecondArgumentLength(char* argv[], Board_t *board_ptr);
+void handleThirdArgumentLength(char* argv[], Board_t *board_ptr);
 void fillBoardFromTxtFile(Board_t *board_ptr, FILE *file);
 int readTxtFileToArray(Board_t*board_ptr, FILE *file);
 bool checkIfWon(Board_t *board_ptr);
 unsigned int captureInputTurn(Board_t *board_ptr, int turnCounter);
-
+unsigned int generateRand(Board_t *board_ptr);
+void fillBoard(Board_t *board_ptr);
 /*void handleThirdArgumentColours(int argv, char* argv[], Board_t *board_ptr);*/

@@ -89,5 +89,40 @@ unsigned int getIndexFromXY(Board_t *board_ptr, unsigned char x, unsigned char y
 
 }
 
+unsigned int generateRand(Board_t *board_ptr){
+
+  unsigned char numColours = board_ptr->maxColour;
+  printf("num of colours is: %u \n", numColours );
+  /* We have to specify numColours + 1 otherwise the rand() funciton would
+     begin from 0 instead of 1
+  */
+  unsigned int randColour;
+  randColour = rand() % numColours + 1;
+
+  return randColour;
+}
+
+void fillBoard(Board_t *board_ptr){
+
+  unsigned char len = board_ptr->length;
+  unsigned char *array = board_ptr->array2d;
+  int c;
+  int r;
+  unsigned int index;
+
+  printf("entering fill board loop\n");
+
+  for(c = 0; c < len ; c++){
+    printf("looping through columns\n");
+    for(r = 0; r < len ; r++){
+      printf("looping through rows\n" );
+      index = getIndexFromXY(board_ptr, c, r);
+      printf("index is: %u\n", index);
+      array[index] = generateRand(board_ptr);
+      printf("%u", array[index]);
+    }
+    printf("\n");
+  }
+}
 
 /* https://www.geeksforgeeks.org/lvalue-and-rvalue-in-c-language/ */

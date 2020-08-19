@@ -22,6 +22,7 @@ int main (int argc, char *argv[]){
     printf("User input is: &u \n", userInput);
     print2dArray(&board);
   }
+  printf("You won! BUT DELETE THIS COMMENT AT THE END AS ITS NOT ALLOWED\n");
 
 
 /*
@@ -65,6 +66,7 @@ void handleArguements(int argc, char* argv[], Board_t *board_ptr){
         board_ptr->maxColour = DEFAULT_NUM_COLOURS;
         /*Need to check for a NULL pointer later on*/
         makeBoard(board_ptr);
+        fillBoard(board_ptr);
       break;
     case 2:
       /* boardSize 1-9  incomplete*/
@@ -75,8 +77,13 @@ void handleArguements(int argc, char* argv[], Board_t *board_ptr){
           open a file by default to check if there is a file or not*/
         if(file == NULL){
           /* If we get to here, we now need to check if argv[1] is a single int */
-          handleSecondArgumentLength(argc, argv, board_ptr);
+          handleSecondArgumentLength(argv, board_ptr);
+          board_ptr->maxColour = DEFAULT_NUM_COLOURS;
           makeBoard(board_ptr);
+          printf("board has been made\n");
+          fillBoard(board_ptr);
+          printf("filled board successfully \n");
+
         }
         else{
             readTxtFileToArray(board_ptr, file);
@@ -92,8 +99,10 @@ void handleArguements(int argc, char* argv[], Board_t *board_ptr){
         - As with case two, get the user input for argv[1][0] and argv [2][0]
         - Check if the inputs from the user are valid and the set the board up!
        */
-        handleSecondArgumentLength(argc, argv, board_ptr);
+        handleThirdArgumentLength(argv, board_ptr);
         makeBoard(board_ptr);
+        fillBoard(board_ptr);
+
 
       break;
     default:
@@ -126,12 +135,15 @@ void print2dArray(Board_t *board_ptr){
   }
 }
 
-void handleSecondArgumentLength(int argc, char* argv[], Board_t *board_ptr){
+void handleSecondArgumentLength(char* argv[], Board_t *board_ptr){
 
   int length;
 
   /*Checks that the input paramater is valid by seeing if it is a single
     character or number*/
+  printf("%s\n", argv[1] );
+  /*If the string length of argv[1] is more than 2 characters, we have a number
+    above 100 or something of three or more charaters*/
   if(strlen(argv[1]) > 2){
     fprintf(stderr, "Incorrect argument, try to use a number between 2-20.\n");
     exit(-1);
@@ -141,7 +153,15 @@ void handleSecondArgumentLength(int argc, char* argv[], Board_t *board_ptr){
       (Both indecies 0 and 1 for the first argument, i.e.,
     ./floodit 14) Both the 1 and 4 at position argv[1] are checked.
      */
-    if(isdigit(argv[1][0]) && isdigit(argv[1][1])){
+     /* - The first check is to check the first digit is one character long and
+          that that character is a digit.
+        - The second check is if argv[1] is more than one character, and therefore
+          is two (we have already checked it is not more than two), both the
+          characters are digits so '3a' is not valid but '39' is at this point.
+          We will then go on to check the number is between 2 and 20
+      */
+    if(isdigit(argv[1][0]) && strlen(argv[1]) == 1
+    || isdigit(argv[1][0]) && isdigit(argv[1][1])){
       printf("Argument given is: %c%c\n", argv[1][0], argv[1][1]);
       /*
         - We first convert the string passed down from argv[1]
@@ -167,12 +187,41 @@ void handleSecondArgumentLength(int argc, char* argv[], Board_t *board_ptr){
     else{
       fprintf(stderr, "Failed: You passed in a large number or\n"
       "letter which is an invalid text file, please try a number\n"
-      "between 2-20");
+      "between 2-20 \n");
       exit(-1);
     }
   }
 }
+/* this function is a mess, it has mixture or argv[2] and numColours but for
+   some reason I must have both for the programme to work so something is wrong
+   here
+*/
+void handleThirdArgumentLength(char* argv[], Board_t *board_ptr){
 
+  unsigned char numColours;
+
+  handleSecondArgumentLength(argv, board_ptr);
+  numColours = atoi(argv[2]);
+  printf("Argv[2] is: %s\n", argv[2]);
+  printf("numColours is: %u\n", numColours);
+
+  if(strlen(argv[2]) > 1){
+    fprintf(stderr, "Input too long, must be a number between 1-9\n");
+    exit(-1);
+  }
+
+  else{
+        printf("checked argv[2] is a single character\n");
+        /*THE LINE BELOW IS HORRIBLE,THIS NEEDS LOOKING AT BUT IT CURRENTLY WORKS */ 
+      if(!isdigit(argv[2]) && numColours == 0){
+        fprintf(stderr, "%s is not valid input\n",argv[2]);
+        exit(-1);
+      } /*By this point, argv[2] (now numColours) must be a number betwwen 1-9 */
+        board_ptr->maxColour = numColours;
+    }
+
+
+}
 /*
 void handleThirdArgumentColours(int argv, char* argv[], Board_t *board_ptr){
   if(strlen(argv[2] != 1)){
@@ -369,7 +418,7 @@ int readTxtFileToArray(Board_t *board_ptr, FILE *file){
     return 0;
   }
 
-  unsigned int captureInputTurn(Board_t *board_ptr, int turnCounter){
+unsigned int captureInputTurn(Board_t *board_ptr, int turnCounter){
 
     unsigned int turnInputNum = 0;
 
@@ -378,11 +427,11 @@ int readTxtFileToArray(Board_t *board_ptr, FILE *file){
     printf("turn input is: %u\n", turnInputNum );
     printf("board max colour is: %u\n", board_ptr->maxColour);
     if(turnInputNum < MIN_NUM_COLOURS || turnInputNum > board_ptr->maxColour){
-      fprintf(stderr, "Invalid number: must be between 1-9\n");
+      fprintf(stderr, "Invalid number: must be between 1-%u\n", board_ptr->maxColour);
       exit(-1);
     }
     return turnInputNum;
-  }
+}
 
 
   /* once checked length, then go through loop again but instead of
