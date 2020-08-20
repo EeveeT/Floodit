@@ -47,7 +47,7 @@ typedef struct{
 } Board_t;
 
 
-void makeBoard(Board_t *board_ptr);
+void setUpBoardMem(Board_t *board_ptr);
 void cleanUpBoard(Board_t *board_ptr);
 void setColourAt(Board_t *board_ptr, unsigned char x, unsigned char y, Colour_t colour);
 Colour_t getColourAt(Board_t *board_ptr, unsigned char x, unsigned char y);
@@ -55,6 +55,7 @@ Colour_t colourAt(Board_t *board_ptr, unsigned char x, unsigned char y);
 unsigned int getIndexFromXY(Board_t *board_ptr, unsigned char x, unsigned char y);
 void print2dArray(Board_t *board_ptr);
 void handleArguements(int argc, char* argv[], Board_t *board_ptr);
+void handleFirstArgument(Board_t *board_ptr);
 void handleSecondArgumentLength(char* argv[], Board_t *board_ptr);
 void handleThirdArgumentLength(char* argv[], Board_t *board_ptr);
 void fillBoardFromTxtFile(Board_t *board_ptr, FILE *file);
@@ -63,4 +64,5 @@ bool checkIfWon(Board_t *board_ptr);
 unsigned int captureInputTurn(Board_t *board_ptr, int turnCounter);
 unsigned int generateRand(Board_t *board_ptr);
 void fillBoard(Board_t *board_ptr);
+void updateBoard(Board_t *board_ptr, unsigned int userInput);
 /*void handleThirdArgumentColours(int argv, char* argv[], Board_t *board_ptr);*/

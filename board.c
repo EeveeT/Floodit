@@ -1,6 +1,7 @@
 #include "board.h"
 
-void makeBoard(Board_t *board_ptr){
+/* This funciton dynamically allocates the memory for the board */
+void setUpBoardMem(Board_t *board_ptr){
   /* We create the len variable to avoid long lines of code*/
   unsigned char len;
   len = board_ptr->length;
@@ -92,12 +93,13 @@ unsigned int getIndexFromXY(Board_t *board_ptr, unsigned char x, unsigned char y
 unsigned int generateRand(Board_t *board_ptr){
 
   unsigned char numColours = board_ptr->maxColour;
-  printf("num of colours is: %u \n", numColours );
-  /* We have to specify numColours + 1 otherwise the rand() funciton would
-     begin from 0 instead of 1
-  */
+  //printf("num of colours is: %u \n", numColours );
   unsigned int randColour;
-  randColour = rand() % numColours + 1;
+  /*Using modulo here to constrain upper limit of number of colours
+    We have to specify numColours + 1 otherwise the rand() function would
+    begin from 0 instead of 1 (which is the minumum number of colours)
+  */
+  randColour = rand() % numColours + MIN_NUM_COLOURS;
 
   return randColour;
 }
@@ -110,14 +112,14 @@ void fillBoard(Board_t *board_ptr){
   int r;
   unsigned int index;
 
-  printf("entering fill board loop\n");
+//  printf("entering fill board loop\n");
 
   for(c = 0; c < len ; c++){
-    printf("looping through columns\n");
+  //  printf("looping through columns\n");
     for(r = 0; r < len ; r++){
-      printf("looping through rows\n" );
+    //  printf("looping through rows\n" );
       index = getIndexFromXY(board_ptr, c, r);
-      printf("index is: %u\n", index);
+    //  printf("index is: %u\n", index);
       array[index] = generateRand(board_ptr);
       printf("%u", array[index]);
     }

@@ -13,13 +13,14 @@ int main (int argc, char *argv[]){
   handleArguements(argc, argv, &board);
   /*The & enables the function to access the address in memory
     to where board is stored */
-  /*if(!makeBoard(&board, board.length)){
+  /*if(!setUpBoardMem(&board, board.length)){
     fprintf(stderr, "This should never have happened\n");
   }*/
   while(!checkIfWon(&board)){
     turnCounter += 1;
     userInput = captureInputTurn(&board, turnCounter);
-    printf("User input is: &u \n", userInput);
+    printf("User input is: %u \n", userInput);
+    updateBoard(&board, userInput);
     print2dArray(&board);
   }
   printf("You won! BUT DELETE THIS COMMENT AT THE END AS ITS NOT ALLOWED\n");
@@ -59,14 +60,12 @@ int main (int argc, char *argv[]){
 void handleArguements(int argc, char* argv[], Board_t *board_ptr){
 
   FILE *file;
+  /* We set array to NULL to be certain the malloc operation was a success */
+  board_ptr->array2d = NULL;
 
   switch (argc){
     case 1:
-        board_ptr->length = DEFAULT_BOARD_SIZE;
-        board_ptr->maxColour = DEFAULT_NUM_COLOURS;
-        /*Need to check for a NULL pointer later on*/
-        makeBoard(board_ptr);
-        fillBoard(board_ptr);
+          handleFirstArgument(board_ptr);
       break;
     case 2:
       /* boardSize 1-9  incomplete*/
@@ -79,7 +78,6 @@ void handleArguements(int argc, char* argv[], Board_t *board_ptr){
           /* If we get to here, we now need to check if argv[1] is a single int */
           handleSecondArgumentLength(argv, board_ptr);
           board_ptr->maxColour = DEFAULT_NUM_COLOURS;
-          makeBoard(board_ptr);
           printf("board has been made\n");
           fillBoard(board_ptr);
           printf("filled board successfully \n");
@@ -100,7 +98,6 @@ void handleArguements(int argc, char* argv[], Board_t *board_ptr){
         - Check if the inputs from the user are valid and the set the board up!
        */
         handleThirdArgumentLength(argv, board_ptr);
-        makeBoard(board_ptr);
         fillBoard(board_ptr);
 
 
@@ -108,6 +105,11 @@ void handleArguements(int argc, char* argv[], Board_t *board_ptr){
     default:
       /* else error */
       fprintf(stderr, "something went wrong\n");
+  }
+  /* Final last resort error check that should not happen */
+  if(board_ptr->array2d == NULL){
+    fprintf(stderr, "Failed to setup the board\n");
+    exit(-1);
   }
 }
  /*If the board has not been malloced, will crash.
@@ -133,6 +135,14 @@ void print2dArray(Board_t *board_ptr){
     }
     printf("\n");
   }
+}
+
+void handleFirstArgument(Board_t *board_ptr){
+  board_ptr->length = DEFAULT_BOARD_SIZE;
+  board_ptr->maxColour = DEFAULT_NUM_COLOURS;
+  /*Need to check for a NULL pointer later on*/
+  setUpBoardMem(board_ptr);
+  fillBoard(board_ptr);
 }
 
 void handleSecondArgumentLength(char* argv[], Board_t *board_ptr){
@@ -191,6 +201,8 @@ void handleSecondArgumentLength(char* argv[], Board_t *board_ptr){
       exit(-1);
     }
   }
+  /*If we get to here, all errors have passed so we can safely create the board*/
+  setUpBoardMem(board_ptr);
 }
 /* this function is a mess, it has mixture or argv[2] and numColours but for
    some reason I must have both for the programme to work so something is wrong
@@ -212,15 +224,19 @@ void handleThirdArgumentLength(char* argv[], Board_t *board_ptr){
 
   else{
         printf("checked argv[2] is a single character\n");
-        /*THE LINE BELOW IS HORRIBLE,THIS NEEDS LOOKING AT BUT IT CURRENTLY WORKS */ 
-      if(!isdigit(argv[2]) && numColours == 0){
+        /*THE LINE BELOW IS HORRIBLE,THIS NEEDS LOOKING AT BUT IT CURRENTLY WORKS
+        statement below checks argv[2] is a digit that is not 0 */
+      if(!isdigit(argv[2][0])){
         fprintf(stderr, "%s is not valid input\n",argv[2]);
         exit(-1);
-      } /*By this point, argv[2] (now numColours) must be a number betwwen 1-9 */
-        board_ptr->maxColour = numColours;
+      }
+      if(numColours == 0){
+        fprintf(stderr, "%d is an invalid input, numbers must be between 1-9\n",numColours);
+        exit(-1);
+      }
+      /*By this point, argv[2] (now numColours) must be a number betwwen 1-9 */
+      board_ptr->maxColour = numColours;
     }
-
-
 }
 /*
 void handleThirdArgumentColours(int argv, char* argv[], Board_t *board_ptr){
@@ -344,7 +360,7 @@ int readTxtFileToArray(Board_t *board_ptr, FILE *file){
       r++;
     }
 
-    printf("Column is: %d \nRow is: %d\n", c, r );
+  //  printf("Column is: %d \nRow is: %d\n", c, r );
   }
   /*To create the 2D Array from the Board_t structure
     Need to check length is valid before making the board.
@@ -364,22 +380,22 @@ int readTxtFileToArray(Board_t *board_ptr, FILE *file){
       board_ptr->length = rowLen;
     }
 
-    makeBoard(board_ptr);
+    setUpBoardMem(board_ptr);
 
     c = 0;
     r = 0;
-    printf("Entering j for loop...\n" );
+    //printf("Entering j for loop...\n" );
     for(j = 0; j < num_char_length; j++){
       if(!isdigit(charArray[j]) && charArray[j] != '\n' && charArray[j] != '\0'){
         fprintf(stderr, "File must contain numbers 1-9 only\n");
         exit(-1);
       }
-      printf("checking text input is valid...\n");
+    //  printf("checking text input is valid...\n");
       if(charArray[j] != '\n' && charArray[j]!= '\0' && charArray[j] != LF_CHAR && charArray[j] != '\r'){
         /*Value will now be the actual value of the number character and not the
           ASCII value of that character */
         value = charArray[j] - '0';
-        printf("value is: %d\n", value);
+      //  printf("value is: %d\n", value);
         /*
           To find the highest colour/number value, and therefore how
           many different 'colours' there are, we can use the conditional

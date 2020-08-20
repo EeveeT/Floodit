@@ -25,5 +25,15 @@ printf("entering for loop to check if won\n");
   }
   /*If we get to here, then everything in the board must be the same*/
   return true;
+}
+
+void updateBoard(Board_t *board_ptr, unsigned int userInput){
+
+  unsigned char c = 0;
+  unsigned char r = 0;
+  unsigned int index;
+
+  index = getIndexFromXY(board_ptr, c, r);
+  board_ptr->array2d[index] = userInput;
 
 }
