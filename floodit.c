@@ -1,4 +1,4 @@
-#include "board.h"
+#include "floodit.h"
 
 int main (int argc, char *argv[]){
 
@@ -71,7 +71,7 @@ void handleArguements(int argc, char* argv[], Board_t *board_ptr){
       /* boardSize 1-9  incomplete*/
       printf("Trying to open file %s\n",argv[1]);
         file = fopen(argv[1], "r");
-        printf("File = %p \n", file);
+      //  printf("File = %p \n", file);
         /* To check if argc == 2 is either a file or an int, we try to
           open a file by default to check if there is a file or not*/
         if(file == NULL){

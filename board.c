@@ -1,4 +1,4 @@
-#include "board.h"
+#include "floodit.h"
 
 /* This funciton dynamically allocates the memory for the board */
 void setUpBoardMem(Board_t *board_ptr){
