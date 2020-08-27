@@ -1,5 +1,7 @@
 #include "floodit.h"
 
+/* COL ROW NEEDS TO BE REVERSED */
+
 int main (int argc, char *argv[]){
 
 /*  This is the real board we always want to use, hence why it is in main,
@@ -8,8 +10,8 @@ int main (int argc, char *argv[]){
 */
   Board_t board;
   int turnCounter = 0;
-  unsigned int userInput = 0;
-  board.length = DEFAULT_BOARD_SIZE;
+  Colour_t fillNumber = 0;
+  //board.length = DEFAULT_BOARD_SIZE;
   handleArguements(argc, argv, &board);
   /*The & enables the function to access the address in memory
     to where board is stored */
@@ -18,10 +20,10 @@ int main (int argc, char *argv[]){
   }*/
   while(!checkIfWon(&board)){
     turnCounter += 1;
-    userInput = captureInputTurn(&board, turnCounter);
-    printf("User input is: %u \n", userInput);
-    updateBoard(&board, userInput);
-    print2dArray(&board);
+    fillNumber = captureInputTurn(&board, turnCounter);
+    printf("User input is: %u \n", fillNumber);
+    updateBoard(&board, fillNumber);
+    printBoard(&board);
   }
 
 
@@ -77,14 +79,14 @@ void handleArguements(int argc, char* argv[], Board_t *board_ptr){
         if(file == NULL){
           /* If we get to here, we now need to check if argv[1] is a single int */
           handleSecondArgumentLength(argv, board_ptr);
-          board_ptr->maxColour = DEFAULT_NUM_COLOURS;
+          board_ptr->colourCount = DEFAULT_NUM_COLOURS;
           printf("board has been made\n");
           fillBoard(board_ptr);
           printf("filled board successfully \n");
 
         }
         else{
-            readTxtFileToArray(board_ptr, file);
+              handleFileArgument(board_ptr, file);
           /*  fillBoardFromTxtFile(board_ptr, file);*/
             /* Line below is now correct, just used to void a seg fault for now*/
             fclose(file);
@@ -117,7 +119,7 @@ void handleArguements(int argc, char* argv[], Board_t *board_ptr){
   - check len > 1
   */
 
-void print2dArray(Board_t *board_ptr){
+void printBoard(Board_t *board_ptr){
 
   unsigned char c, r = 0;
   unsigned int index;
@@ -127,11 +129,8 @@ void print2dArray(Board_t *board_ptr){
 
   for(r = 0; r < len; r++){
     for(c = 0; c < len; c++){
-
-      index = getIndexFromXY(board_ptr, c, r);
-      /*printf("Index:%d \n row: %d\n column: %d \n board_ptr: %p\n array*: %p \n",index, r, c, board_ptr, board_ptr->array2d);*/
+      index = getIndexFromColRow(board_ptr, c, r);
       printf("%d", board_ptr->array2d[index]);
-
     }
     printf("\n");
   }
@@ -139,8 +138,8 @@ void print2dArray(Board_t *board_ptr){
 
 void handleFirstArgument(Board_t *board_ptr){
   board_ptr->length = DEFAULT_BOARD_SIZE;
-  board_ptr->maxColour = DEFAULT_NUM_COLOURS;
-  /*Need to check for a NULL pointer later on*/
+  board_ptr->colourCount = DEFAULT_NUM_COLOURS;
+
   setUpBoardMem(board_ptr);
   fillBoard(board_ptr);
 }
@@ -184,14 +183,8 @@ void handleSecondArgumentLength(char* argv[], Board_t *board_ptr){
       board_ptr->length = (unsigned char)length;
       printf("length is: %d\n", length);
 
-      if(board_ptr->length < MIN_BOARD_SIZE){
-        fprintf(stderr, "Board size too small, must be between 2-20.\n");
-        exit(-1);
-      }
-      if(board_ptr->length >  MAX_BOARD_SIZE){
-        fprintf(stderr, "Board size too big, must be between 2-20\n");
-        exit(-1);
-      }
+      checkBoardLenValid(board_ptr);
+
       printf("converted to an int %c\n",board_ptr->length);
     }
     else{
@@ -235,8 +228,21 @@ void handleThirdArgumentLength(char* argv[], Board_t *board_ptr){
         exit(-1);
       }
       /*By this point, argv[2] (now numColours) must be a number betwwen 1-9 */
-      board_ptr->maxColour = numColours;
+      board_ptr->colourCount = numColours;
     }
+}
+
+void checkBoardLenValid(Board_t *board_ptr){
+
+  if(board_ptr->length < MIN_BOARD_SIZE){
+    fprintf(stderr, "Board size too small, must be between 2-20.\n");
+    exit(-1);
+  }
+  if(board_ptr->length >  MAX_BOARD_SIZE){
+    fprintf(stderr, "Board size too big, must be between 2-20\n");
+    exit(-1);
+  }
+
 }
 /*
 void handleThirdArgumentColours(int argv, char* argv[], Board_t *board_ptr){
@@ -273,7 +279,7 @@ int readTxtFileToArray(Board_t *board_ptr, FILE *file){
   unsigned char value;
   int j;
   unsigned int index;
-  unsigned char maxValue = 0;
+  Colour_t maxNumColour = 0;
 /*
   Working form this website:
   https://www.tutorialspoint.com/c_standard_library/c_function_ftell.htm
@@ -402,15 +408,15 @@ int readTxtFileToArray(Board_t *board_ptr, FILE *file){
           operator to get the highest number in the array.
           https://www.geeksforgeeks.org/conditional-or-ternary-operator-in-c-c/
         */
-        maxValue = maxValue > value ? maxValue : value;
-        printf("max number of colours is: %u\n", maxValue );
+        maxNumColour = maxNumColour > value ? maxNumColour : value;
+        printf("max number of colours is: %u\n", maxNumColour );
 
         if(value < 1 || value > 9){
           fprintf(stderr, "Numbers in file must be between 1-9\n");
           exit(-1);
         }
         else{
-          index = getIndexFromXY(board_ptr, (unsigned char)c, (unsigned char) r);
+          index = getIndexFromColRow(board_ptr, (unsigned char)c, (unsigned char) r);
           printf("Saving value(%d) into array..\n", value);
           /*Puts all the values into the board from the file */
           board_ptr->array2d[index] = value;
@@ -426,7 +432,7 @@ int readTxtFileToArray(Board_t *board_ptr, FILE *file){
         r++;
       }
     }
-    board_ptr->maxColour = maxValue;
+    board_ptr->colourCount = maxNumColour;
     /*Text file has been transferred into a chunk of memory and now we
       are done with the charArray we used (as its easier to work with an array
       that directly with a text file), we need to free the memory we were using*/
@@ -434,19 +440,21 @@ int readTxtFileToArray(Board_t *board_ptr, FILE *file){
     return 0;
   }
 
-unsigned int captureInputTurn(Board_t *board_ptr, int turnCounter){
+Colour_t captureInputTurn(Board_t *board_ptr, int turnCounter){
 
-    unsigned int turnInputNum = 0;
+    Colour_t turnColour;
 
     printf("Turn %d : What number ? ", turnCounter);
-    scanf("%u", &turnInputNum);
-    printf("turn input is: %u\n", turnInputNum );
-    printf("board max colour is: %u\n", board_ptr->maxColour);
-    if(turnInputNum < MIN_NUM_COLOURS || turnInputNum > board_ptr->maxColour){
-      fprintf(stderr, "Invalid number: must be between 1-%u\n", board_ptr->maxColour);
-      exit(-1);
+    scanf("%u", &turnColour);
+    printf("turn input is: %u\n", turnColour );
+    printf("board max colour is: %u\n", board_ptr->colourCount);
+    if(turnColour < MIN_NUM_COLOURS || turnColour > board_ptr->colourCount){
+      fprintf(stderr, "Invalid number: must be between 1-%u\n", board_ptr->colourCount);
+      /* Instead of exiting the game and ending it for the user, we simply return
+          so they can keep playing*/
+
     }
-    return turnInputNum;
+    return turnColour;
 }
 
 
@@ -456,24 +464,8 @@ unsigned int captureInputTurn(Board_t *board_ptr, int turnCounter){
      1-9.
   */
 
-  /* */
-
-  /*Free the memory once we're done with the text file */
-
-
-
-
-
-/*https://www.programiz.com/c-programming/library-function/string.h/strlen */
-
-
 /* todo:
-- pass arguemnts from command line
 - load in text file, save to array
-- write a function to check if all array cells have the same value and if so,
-  they win
+- find highest number in array
+- allocate memeory for board contents
 */
-
-
-
-/*once file set up, then need to create loop for getting user input for next play */

@@ -14,7 +14,7 @@ bool checkIfWon(Board_t *board_ptr){
   for(c = 0; c < len ; c++){
   //  printf("going through columns\n");
     for(r = 0 ; r < len ; r++){
-      index = getIndexFromXY(board_ptr, c, r);
+      index = getIndexFromColRow(board_ptr, c, r);
   //    printf("Going through rows\n");
     //  printf("ch is: %u\n", ch );
       //printf("array[index] is: %u\n", array[index]);
@@ -26,81 +26,63 @@ bool checkIfWon(Board_t *board_ptr){
   /*If we get to here, then everything in the board must be the same*/
   return true;
 }
+/*
+  Starting at the top left cell, we fill in all adjacantly connected cells
+  of the same colour with `fillColour`.
+*/
+void updateBoard(Board_t *board_ptr, Colour_t fillColour){
 
-void updateBoard(Board_t *board_ptr, unsigned int userInput){
+  Colour_t targetColour = getColourAt(board_ptr, START_CELL, START_CELL);
 
-  unsigned char c = 0;
-  unsigned char r = 0;
-  unsigned int index;
-
-  index = getIndexFromXY(board_ptr, c, r);
-  checkNeighbourCell(board_ptr, 0, 0, userInput);
-  board_ptr->array2d[index] = userInput;
+  updateBoardRecursive(
+    board_ptr,
+    START_CELL, START_CELL,
+    fillColour, targetColour
+  );
 
 }
+/*
 
-void checkNeighbourCell(Board_t *board_ptr, unsigned char c, unsigned char r, unsigned int userInput){
+ */
+void updateBoardRecursive(
+  Board_t *board_ptr,
+  unsigned char col, unsigned char row,
+  Colour_t fillColour, Colour_t targetColour
+){
+  unsigned char nextCol;
+  unsigned char nextRow;
+  Colour_t currColour;
 
-  unsigned char cMod;
-  unsigned char targC;
-  unsigned char targR;
-  unsigned char currColour;
-  unsigned int index;
-  unsigned char startColour;
-
-  index = getIndexFromXY(board_ptr, START_CELL, START_CELL);
-
-  /*The start "colour" at cell 0,0 which is the beginning of the game */
-  startColour = board_ptr->array2d[index];
-
-  /*We need to check square"behind" which is -1 to where we currently are
-   This loop checks cell behind, current cell, then next cell*/
-  for(cMod = NEIGHBOUR_NEG; cMod <= NEIGHBOUR_POS; cMod++){
-    targC = c + cMod;
-  }
- /* If we receive an invalid coordinate to check, will quit the function
-    c and r cannot be equal to board length because index starts at 0, so
-    board length is +1*/
-  if(c < 0 || c >= board_ptr->length){
-    return;
-  }
-  if(r < 0 || r >= board_ptr->length){
+  /*If the coordinate is invalid, we quit the recursion but not the game */
+  if(!isValidCoord(board_ptr, col, row)){
     return;
   }
 
-  index = getIndexFromXY(board_ptr, c, r);
-  /*To get the colour at the current cell */
-  currColour = board_ptr->array2d[index];
-  /* */
-  if(startColour != currColour){
+  currColour = getColourAt(board_ptr, col, row);
+  /*Checks that target colour is not currrent colour because we don't change the
+    colour of any cells that are not the target colour/number*/
+  if(targetColour != currColour){
     return;
   }
+  setColourAt(board_ptr, col, row, fillColour);
 
-  printf("I am checking c: %u and r: %u\n",c, r);
-  /*Checks cell "behind" */
-  //targR = r;
-  //targC = c + NEIGHBOUR_NEG;
+  nextRow = row;
+  nextCol = col + NEXT_CELL;
 
-  //checkNeighbourCell(board_ptr, targC, targR);
+  updateBoardRecursive(board_ptr, nextCol, nextRow, fillColour, targetColour);
 
-  //targR = r + NEIGHBOUR_NEG;
-  //targC = c;
+  nextRow = row + NEXT_CELL;
+  nextCol = col;
 
-  //checkNeighbourCell(board_ptr, targC, targR);
+  updateBoardRecursive(board_ptr, nextCol, nextRow, fillColour, targetColour);
 
+}
+bool isValidCoord(Board_t *board_ptr, unsigned char col, unsigned char row){
 
-
-  targR = r;
-  targC = c + NEIGHBOUR_POS;
-
-  checkNeighbourCell(board_ptr, targC, targR, userInput);
-
-  targR = r + NEIGHBOUR_POS;
-  targC = c;
-
-  checkNeighbourCell(board_ptr, targC, targR, userInput);
-
-  board_ptr->array2d[index] = userInput;
-
-
+  /*
+    Col and Row are always greater than 0 because they are unsigned.
+    To ensure that col and row are within the board, we compare them
+    against the length of the board.
+  */
+  return (col < board_ptr->length) && (row < board_ptr->length);
 }

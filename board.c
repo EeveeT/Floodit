@@ -41,17 +41,17 @@ void cleanUpBoard(Board_t *board_ptr){
 
 }
 /* To fill in a single square with a colour */
-void setColourAt(Board_t *board_ptr, unsigned char x, unsigned char y, Colour_t colour){
+void setColourAt(Board_t *board_ptr, unsigned char col, unsigned char row, Colour_t colour){
   /*L value type  */
-  unsigned int index = getIndexFromXY(board_ptr, x, y);
+  unsigned int index = getIndexFromColRow(board_ptr, col, row);
   board_ptr->array2d[index] = colour;
   return;
 
 }
 
-Colour_t getColourAt(Board_t *board_ptr, unsigned char x, unsigned char y){
+Colour_t getColourAt(Board_t *board_ptr, unsigned char col, unsigned char row){
 
-  return colourAt(board_ptr, x, y);
+  return colourAt(board_ptr, col, row);
 
 }
 /*
@@ -63,28 +63,28 @@ Colour_t getColourAt(Board_t *board_ptr, unsigned char x, unsigned char y){
 
   - In both cases need to dereference
  */
-Colour_t colourAt(Board_t *board_ptr, unsigned char x, unsigned char y) {
+Colour_t colourAt(Board_t *board_ptr, unsigned char col, unsigned char row) {
   /*
     - Unsigned int because negative memory locations don't exist
     - We turn a 2D coordinate to a 1D index we can use
   */
 
-  unsigned int index = getIndexFromXY(board_ptr, x, y);
+  unsigned int index = getIndexFromColRow(board_ptr, col, row);
 
   return board_ptr->array2d[index];
 }
 
 /* As malloc only provides a strip of memory, we need to be consistent in
    indexing through a '1D' table. */
-unsigned int getIndexFromXY(Board_t *board_ptr, unsigned char x, unsigned char y){
+unsigned int getIndexFromColRow(Board_t *board_ptr, unsigned char col, unsigned char row){
 
-  /* The part in () 'hops' along the 1D array in chunks of the length of our
-     board. For example, if y = 0, then this indicates the first 'chunk'.
-     If y = 2, then we would be in the second chunk of the length of the board.
-     This always gets us the beginning of the chunk (row), and x traverses
+  /* The part in () 'hops' along the 1D array in rows of the length of our
+     board. For example, if r = 0, then this indicates the first 'chunk'.
+     If r = 2, then we would be in the second row of the length of the board.
+     This always gets us the beginning of the row, and c traverses
      through each cell in that row
   */
-  unsigned int index = x + (board_ptr->length * y);
+  unsigned int index = col + (board_ptr->length * row);
 
   return index;
 
@@ -92,7 +92,7 @@ unsigned int getIndexFromXY(Board_t *board_ptr, unsigned char x, unsigned char y
 
 unsigned int generateRand(Board_t *board_ptr){
 
-  unsigned char numColours = board_ptr->maxColour;
+  unsigned char numColours = board_ptr->colourCount;
   //printf("num of colours is: %u \n", numColours );
   unsigned int randColour;
   /*Using modulo here to constrain upper limit of number of colours
@@ -108,17 +108,17 @@ void fillBoard(Board_t *board_ptr){
 
   unsigned char len = board_ptr->length;
   unsigned char *array = board_ptr->array2d;
-  int c;
-  int r;
+  int col;
+  int row;
   unsigned int index;
 
 //  printf("entering fill board loop\n");
 
-  for(c = 0; c < len ; c++){
+  for(col = 0; col < len ; col++){
   //  printf("looping through columns\n");
-    for(r = 0; r < len ; r++){
+    for(row = 0; row < len ; row++){
     //  printf("looping through rows\n" );
-      index = getIndexFromXY(board_ptr, c, r);
+      index = getIndexFromColRow(board_ptr, col, row);
     //  printf("index is: %u\n", index);
       array[index] = generateRand(board_ptr);
       printf("%u", array[index]);
