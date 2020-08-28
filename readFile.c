@@ -1,72 +1,92 @@
 #include "floodit.h"
 
-void handleFileArgument(Board_t *board_ptr, FILE *file){
+void handleFile(Board_t *board_ptr, FILE *file){
+  /* We add one to the line length to account for null byte at the end*/
+  char line[MAX_LINE_LEN + 1];
+  u_char boardSize = 0;
+  u_int lineLength;
+  u_char rowCount = 0;
+  Colour_t maxColour = 0;
 
-  char line[LARGE_LINE_NUMBER];
-  unsigned char firstLineLen = 0;
-  unsigned char colCount = 0;
-
-  while(fgets(line, LARGE_LINE_NUMBER, file) != NULL){
-    //printf("Line length is: %d\n",strlen(line));
-    checkColourValid(line);
-    checkLineLenValid(line, &firstLineLen);
-    printf("%s",line);
-    colCount += 1;
+  while(fgets(line, MAX_LINE_LEN + 1, file) != NULL && !stringIsEmpty(line)){
+    lineLength = getLineLength(line);
+    handleLineLength(board_ptr, &boardSize, lineLength);
+    assertAllDigits(line, lineLength);
+    fillRow(board_ptr, line, lineLength, rowCount);
+    findMaxColour(line, lineLength, &maxColour);
+    rowCount += 1;
   }
-/*Square check */
-  checkSquareBoard(colCount, firstLineLen);
-}
-/*
-void allocateMemoryBoardArray(){}
-*/
-/*
-  Checks line is within parameter or min andmax board size and that
-  all lines are the same length by comapring to the first line length
-*/
-void checkLineLenValid(char line[], unsigned char *firstLineLen_ptr ){
-
-  unsigned char len = strlen(line) - NEW_LINE;
-
-  if(len < MIN_BOARD_SIZE){
-    fprintf(stderr, "Board size too small, must be between 2-20.\n");
+  if(rowCount != boardSize){
+    fprintf(stderr, "Board must be a square\n");
     exit(-1);
   }
-  if(len >  MAX_BOARD_SIZE){
-    fprintf(stderr, "Board size too big, must be between 2-20\n");
-    exit(-1);
-  }
-  /*To find the first line, check if current length is 0, if so, can then set the
-    first lenth */
-  if(*firstLineLen_ptr == 0){
-    *firstLineLen_ptr = len;
-  }
-  else if(*firstLineLen_ptr != len){
-    fprintf(stderr, "Varying line lengths, incorrect file format.\n");
-    exit(-1);
-  }
+  board_ptr->colourCount = maxColour;
+  printBoard(board_ptr);
 }
 
-void checkSquareBoard(unsigned char col, unsigned char row){
+u_int getLineLength(char line[]){
 
-  if(col != row){
-    fprintf(stderr, "Rows and Columns must be the same lenths\n");
-    exit(-1);
-  }
+  u_int i;
+
+  for(i = 0; line[i] != '\n' && i < MAX_BOARD_SIZE && line[i] != '\0'; i++) {}
+
+  return i;
 
 }
 
-void checkColourValid(char line[]){
-
-  int i = 0;
-  int len = strlen(line) - NEW_LINE;
-
-  for(i; i < len; i++){
+void assertAllDigits(char line[], u_int lineLength){
+  u_int i;
+  for(i = 0; i < lineLength; i++){
     if(!isdigit(line[i])){
-      fprintf(stderr, "File must contain numbers 1-9 only\n");
+      fprintf(stderr, "Board can only contain numbers 1-9\n");
       exit(-1);
     }
   }
 }
-Colour_t getColourRange(Board_t *board_ptr){
-  /* need to get highest colour value to set as colourCount */
+
+void handleLineLength(Board_t *board_ptr, u_char *boardSize_ptr, u_int lineLength){
+  if(*boardSize_ptr == 0){
+    printf("---------------\n");
+    *boardSize_ptr = lineLength;
+    /*Set up board in the first line*/
+    board_ptr->length = *boardSize_ptr;
+    setUpBoardMem(board_ptr);
+  }
+  else if(*boardSize_ptr != lineLength){
+    fprintf(stderr, "Incorrect line length\n");
+    exit(-1);
+  }
+}
+
+void fillRow(Board_t *board_ptr, char line[], u_int lineLength, u_char row){
+
+  u_char col;
+  Colour_t colour = 0;
+
+  for(col = 0; col < lineLength; col++){
+    colour = digitToColour(line[col]);
+    setColourAt(board_ptr, col, row, colour);
+  }
+}
+
+Colour_t digitToColour(char digit){
+
+  return (Colour_t)(digit - '0');
+}
+
+void findMaxColour(char line[], u_int lineLength, Colour_t *maxColour){
+
+  u_int i;
+  Colour_t colour;
+
+  for(i = 0; i < lineLength; i++){
+    colour = digitToColour(line[i]);
+    if(colour > *maxColour){
+      *maxColour = colour;
+    }
+  }
+}
+
+bool stringIsEmpty(char string[]){
+  return string[0] == '\0';
 }

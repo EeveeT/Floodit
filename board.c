@@ -3,7 +3,7 @@
 /* This funciton dynamically allocates the memory for the board */
 void setUpBoardMem(Board_t *board_ptr){
   /* We create the len variable to avoid long lines of code*/
-  unsigned char len;
+  u_char len;
   len = board_ptr->length;
   if(len == 0 || len > MAX_BOARD_SIZE){
     /*If length is invalid, we haven't used malloc, so to be safe,
@@ -31,9 +31,6 @@ void setUpBoardMem(Board_t *board_ptr){
 
 /* Once we no longer need the board, we need to ensure we free the memory
    allocated for it
-
-   This function receives a pointer to the board, because the free() function
-   needs to opertate on the real variable, the real board.
 */
 void cleanUpBoard(Board_t *board_ptr){
 
@@ -41,42 +38,26 @@ void cleanUpBoard(Board_t *board_ptr){
 
 }
 /* To fill in a single square with a colour */
-void setColourAt(Board_t *board_ptr, unsigned char col, unsigned char row, Colour_t colour){
-  /*L value type  */
-  unsigned int index = getIndexFromColRow(board_ptr, col, row);
+void setColourAt(Board_t *board_ptr, u_char col, u_char row, Colour_t colour){
+
+  u_int index = getIndexFromColRow(board_ptr, col, row);
   board_ptr->array2d[index] = colour;
-  return;
+
 
 }
 
-Colour_t getColourAt(Board_t *board_ptr, unsigned char col, unsigned char row){
+Colour_t getColourAt(Board_t *board_ptr, u_char col, u_char row){
 
-  return colourAt(board_ptr, col, row);
 
-}
-/*
-  - Getting a value:
-  > *colourAt(board, x, y);
+    u_int index = getIndexFromColRow(board_ptr, col, row);
 
-  - Setting a value:
-  > *colourAt(board, x, y) = colour;
+    return board_ptr->array2d[index];
 
-  - In both cases need to dereference
- */
-Colour_t colourAt(Board_t *board_ptr, unsigned char col, unsigned char row) {
-  /*
-    - Unsigned int because negative memory locations don't exist
-    - We turn a 2D coordinate to a 1D index we can use
-  */
-
-  unsigned int index = getIndexFromColRow(board_ptr, col, row);
-
-  return board_ptr->array2d[index];
 }
 
 /* As malloc only provides a strip of memory, we need to be consistent in
    indexing through a '1D' table. */
-unsigned int getIndexFromColRow(Board_t *board_ptr, unsigned char col, unsigned char row){
+u_int getIndexFromColRow(Board_t *board_ptr, u_char col, u_char row){
 
   /* The part in () 'hops' along the 1D array in rows of the length of our
      board. For example, if r = 0, then this indicates the first 'chunk'.
@@ -84,47 +65,67 @@ unsigned int getIndexFromColRow(Board_t *board_ptr, unsigned char col, unsigned 
      This always gets us the beginning of the row, and c traverses
      through each cell in that row
   */
-  unsigned int index = col + (board_ptr->length * row);
+  u_int index = col + (board_ptr->length * row);
 
   return index;
 
 }
 
-unsigned int generateRand(Board_t *board_ptr){
+void checkBoardLenValid(Board_t *board_ptr){
 
-  unsigned char numColours = board_ptr->colourCount;
-  //printf("num of colours is: %u \n", numColours );
-  unsigned int randColour;
+  if(board_ptr->length < MIN_BOARD_SIZE){
+    fprintf(stderr, "Board size too small, must be between 2-20.\n");
+    exit(-1);
+  }
+  if(board_ptr->length >  MAX_BOARD_SIZE){
+    fprintf(stderr, "Board size too big, must be between 2-20\n");
+    exit(-1);
+  }
+}
+
+void printBoard(Board_t *board_ptr){
+
+  u_char col;
+  u_char row;
+  u_char len = board_ptr->length;
+  Colour_t colour;
+
+  for(row = 0; row < len; row++){
+    for(col = 0; col < len; col++){
+      colour = getColourAt(board_ptr, col, row);
+      printf("%d", colour);
+    }
+    printf("\n");
+  }
+}
+
+Colour_t generateRandomColour(Board_t *board_ptr){
+
+  u_char numColours = board_ptr->colourCount;
   /*Using modulo here to constrain upper limit of number of colours
     We have to specify numColours + 1 otherwise the rand() function would
     begin from 0 instead of 1 (which is the minumum number of colours)
   */
-  randColour = rand() % numColours + MIN_NUM_COLOURS;
+  Colour_t randColour = rand() % numColours + MIN_NUM_COLOURS;
 
   return randColour;
 }
 
 void fillBoard(Board_t *board_ptr){
 
-  unsigned char len = board_ptr->length;
-  unsigned char *array = board_ptr->array2d;
+  u_char len = board_ptr->length;
   int col;
   int row;
-  unsigned int index;
-
-//  printf("entering fill board loop\n");
+  Colour_t colour;
 
   for(col = 0; col < len ; col++){
-  //  printf("looping through columns\n");
     for(row = 0; row < len ; row++){
-    //  printf("looping through rows\n" );
-      index = getIndexFromColRow(board_ptr, col, row);
-    //  printf("index is: %u\n", index);
-      array[index] = generateRand(board_ptr);
-      printf("%u", array[index]);
+      colour = generateRandomColour(board_ptr);
+      setColourAt(board_ptr, col, row, colour);
     }
-    printf("\n");
   }
 }
 
-/* https://www.geeksforgeeks.org/lvalue-and-rvalue-in-c-language/ */
+bool isValidColour(Board_t *board_ptr, Colour_t colour){
+  return MIN_NUM_COLOURS <= colour && colour <= board_ptr->colourCount;
+}

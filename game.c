@@ -3,22 +3,16 @@
 
 bool checkIfWon(Board_t *board_ptr){
 
-  Colour_t *array = board_ptr->array2d;
-  unsigned char len = board_ptr->length;
-  unsigned char ch = array[0];
-  int c;
-  int r;
-  unsigned int index;
+  u_char len = board_ptr->length;
+  Colour_t colour;
+  Colour_t startColour = getColourAt(board_ptr, START_CELL, START_CELL);
+  u_char row;
+  u_char col;
 
-//printf("entering for loop to check if won\n");
-  for(c = 0; c < len ; c++){
-  //  printf("going through columns\n");
-    for(r = 0 ; r < len ; r++){
-      index = getIndexFromColRow(board_ptr, c, r);
-  //    printf("Going through rows\n");
-    //  printf("ch is: %u\n", ch );
-      //printf("array[index] is: %u\n", array[index]);
-      if(array[index] != ch){
+  for(row = 0 ; row < len ; row++){
+    for(col = 0; col < len ; col++){
+      colour = getColourAt(board_ptr, col, row);
+      if(startColour != colour){
         return false;
       }
     }
@@ -26,6 +20,7 @@ bool checkIfWon(Board_t *board_ptr){
   /*If we get to here, then everything in the board must be the same*/
   return true;
 }
+
 /*
   Starting at the top left cell, we fill in all adjacantly connected cells
   of the same colour with `fillColour`.
@@ -39,18 +34,15 @@ void updateBoard(Board_t *board_ptr, Colour_t fillColour){
     START_CELL, START_CELL,
     fillColour, targetColour
   );
-
 }
-/*
 
- */
 void updateBoardRecursive(
   Board_t *board_ptr,
-  unsigned char col, unsigned char row,
+  u_char col, u_char row,
   Colour_t fillColour, Colour_t targetColour
 ){
-  unsigned char nextCol;
-  unsigned char nextRow;
+  u_char nextCol;
+  u_char nextRow;
   Colour_t currColour;
 
   /*If the coordinate is invalid, we quit the recursion but not the game */
@@ -77,8 +69,8 @@ void updateBoardRecursive(
   updateBoardRecursive(board_ptr, nextCol, nextRow, fillColour, targetColour);
 
 }
-bool isValidCoord(Board_t *board_ptr, unsigned char col, unsigned char row){
 
+bool isValidCoord(Board_t *board_ptr, u_char col, u_char row){
   /*
     Col and Row are always greater than 0 because they are unsigned.
     To ensure that col and row are within the board, we compare them
@@ -86,3 +78,69 @@ bool isValidCoord(Board_t *board_ptr, unsigned char col, unsigned char row){
   */
   return (col < board_ptr->length) && (row < board_ptr->length);
 }
+
+void runGame(Board_t *board_ptr){
+  u_int turnCounter = 0;
+  Colour_t floodColour = 0;
+
+  while(!checkIfWon(board_ptr)){
+    turnCounter += 1;
+    printBoard(board_ptr);
+    floodColour = captureInputTurn(board_ptr, turnCounter);
+    updateBoard(board_ptr, floodColour);
+  }
+
+  printBoard(board_ptr);
+
+}
+Colour_t captureInputTurn(Board_t *board_ptr, int turnCounter){
+
+    Colour_t turnColour;
+    bool askingForInput = true;
+    int inputCount;
+
+    while (askingForInput) {
+      printf("Turn %d: What number? ", turnCounter);
+      /*
+        Error number (errno) is where most functions report errors.
+        This clears out all errors so we know any errors that do occur are
+        related to scanf
+        Ref: https://linux.die.net/man/3/errno
+      */
+      errno =  NO_ERROR;
+      /*
+        u  = unsigned decimal number (default u_int)
+        hh = use a char/u_char
+        We can read in a u_char and convert it into a Colout_t
+      */
+      inputCount = scanf("%hhu", &turnColour);
+      /* We only want to read in one thing from scanf */
+      if(inputCount == INPUT_COUNT && isValidColour(board_ptr, turnColour)){
+        /* Input has been found and is valid so we leave the while loop*/
+        askingForInput = false;
+      }
+      else if(inputCount == INPUT_COUNT){
+        printf("Please input a valid colour\n");
+      }
+      else if(errno != NO_ERROR){
+        exit(-1);
+      }
+      else{
+        /* Get to here if user entered nothing or too much */
+        printf("Please input a number\n");
+      }
+    }
+    return turnColour;
+}
+
+
+
+
+/*  while(!checkIfWon(&board)){
+      turnCounter += 1;
+      fillNumber = captureInputTurn(&board, turnCounter);
+      printf("User input is: %u \n", fillNumber);
+      updateBoard(&board, fillNumber);
+      printBoard(&board);
+  }
+*/
