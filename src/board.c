@@ -54,7 +54,6 @@ Colour_t getColourAt(Board_t *board_ptr, u_char col, u_char row){
     return board_ptr->array2d[index];
 
 }
-
 /* As malloc only provides a strip of memory, we need to be consistent in
    indexing through a '1D' table. */
 u_int getIndexFromColRow(Board_t *board_ptr, u_char col, u_char row){
@@ -70,7 +69,7 @@ u_int getIndexFromColRow(Board_t *board_ptr, u_char col, u_char row){
   return index;
 
 }
-
+/*change to assert */
 void checkBoardLenValid(Board_t *board_ptr){
 
   if(board_ptr->length < MIN_BOARD_SIZE){
@@ -79,6 +78,17 @@ void checkBoardLenValid(Board_t *board_ptr){
   }
   if(board_ptr->length >  MAX_BOARD_SIZE){
     fprintf(stderr, "Board size too big, must be between 2-20\n");
+    exit(-1);
+  }
+}
+
+void assertMaxColourValid(Board_t *board_ptr){
+  if(board_ptr->colourCount < MIN_NUM_COLOURS){
+    fprintf(stderr, "Max colour is too small\n");
+    exit(-1);
+  }
+  if(board_ptr->colourCount > MAX_NUM_COLOURS){
+    fprintf(stderr, "Max colour is too large\n");
     exit(-1);
   }
 }
