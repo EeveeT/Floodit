@@ -43,7 +43,6 @@ void setColourAt(Board_t *board_ptr, u_char row, u_char col, Colour_t colour){
   u_int index = getIndexFromRowCol(board_ptr, row, col);
   board_ptr->array2d[index] = colour;
 
-
 }
 
 Colour_t getColourAt(Board_t *board_ptr, u_char row, u_char col){
@@ -119,6 +118,19 @@ Colour_t generateRandomColour(Board_t *board_ptr){
   Colour_t randColour = rand() % numColours + MIN_NUM_COLOURS;
 
   return randColour;
+}
+
+bool isValidCoord(Board_t *board_ptr, u_char row, u_char col){
+  /*
+    Col and Row are always greater than 0 because they are unsigned.
+    To ensure that col and row are within the board, we compare them
+    against the length of the board.
+  */
+  return (col < board_ptr->length) && (row < board_ptr->length);
+}
+
+bool isValidColour(Board_t *board_ptr, Colour_t colour){
+  return MIN_NUM_COLOURS <= colour && colour <= board_ptr->colourCount;
 }
 
 void fillBoard(Board_t *board_ptr){

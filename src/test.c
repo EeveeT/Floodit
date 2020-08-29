@@ -4,10 +4,11 @@
 
 void test(void){
   Board_t testBoard;
-  u_char column;
   u_char row;
+  u_char column;
   Colour_t testColour;
   int i;
+  u_int index;
   /*----------------------------- Board Functions---------------------------- */
   /* Test for valid board length values*/
   for(testBoard.length = MIN_BOARD_SIZE; testBoard.length <= MAX_BOARD_SIZE; testBoard.length++){
@@ -46,6 +47,15 @@ void test(void){
     assert(isValidColour(&testBoard, testColour));
   }
 
+  /* Test we are getting the correct index from each coordinate in the board */
+  index = 0;
+  for(row = 0; row < testBoard.length; row++){
+    for(column = 0; column < testBoard.length; column++){
+      assert(getIndexFromRowCol(&testBoard, row, column) == index);
+      index += 1;
+
+    }
+  }
   /* We test setting and getting a colour for each cell in the board*/
   for(row = 0; row < testBoard.length; row++){
     for(column = 0; column < testBoard.length; column++){
@@ -54,9 +64,19 @@ void test(void){
       assert(getColourAt(&testBoard, column, row) == testColour);
     }
   }
+  /* Use memset to set fillBoard function fills only valid colours
+    we put in a value we know are or should be invalid, such as MAX_U_CHAR(255)
+    into each cell in the board*/
+  memset(testBoard.array2d, MAX_U_CHAR, (testBoard.length * testBoard.length));
+  fillBoard(&testBoard);
+  for(row = 0; row < testBoard.length; row++){
+    for(column = 0; column < testBoard.length; column++){
+      testColour = getColourAt(&testBoard, row, column);
+      assert(isValidColour(&testBoard, testColour));
 
-
-
+    }
+  }
+  /*------------------------ Handle Arguments Functions--------------------- */
 
 
 

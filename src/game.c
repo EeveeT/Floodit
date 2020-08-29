@@ -69,15 +69,6 @@ void updateBoardRecursive(
 
 }
 
-bool isValidCoord(Board_t *board_ptr, u_char row, u_char col){
-  /*
-    Col and Row are always greater than 0 because they are unsigned.
-    To ensure that col and row are within the board, we compare them
-    against the length of the board.
-  */
-  return (col < board_ptr->length) && (row < board_ptr->length);
-}
-
 void runGame(Board_t *board_ptr){
   u_int turnCounter = 0;
   Colour_t floodColour = 0;
@@ -133,7 +124,4 @@ Colour_t captureInputTurn(Board_t *board_ptr, int turnCounter){
       }
     }
     return turnColour;
-}
-bool isValidColour(Board_t *board_ptr, Colour_t colour){
-  return MIN_NUM_COLOURS <= colour && colour <= board_ptr->colourCount;
 }

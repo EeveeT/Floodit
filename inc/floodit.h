@@ -47,6 +47,7 @@ void assertColourCountValid(Board_t *board_ptr);
 void printBoard(Board_t *board_ptr);
 Colour_t generateRandomColour(Board_t *board_ptr);
 void fillBoard(Board_t *board_ptr);
+bool isValidCoord(Board_t *board_ptr, u_char row, u_char col);
 bool isValidColour(Board_t *board_ptr, Colour_t colour);
 
 /* Handle Arguments Functions (exl. handle file)*/
@@ -77,7 +78,6 @@ void updateBoardRecursive(
   u_char row, u_char col,
   Colour_t fillColour, Colour_t targetColour
 );
-bool isValidCoord(Board_t *board_ptr, u_char row, u_char col);
 void runGame(Board_t *board_ptr);
 Colour_t captureInputTurn(Board_t *board_ptr, int turnCounter);
 
