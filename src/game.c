@@ -11,7 +11,7 @@ bool checkIfWon(Board_t *board_ptr){
 
   for(row = 0 ; row < len ; row++){
     for(col = 0; col < len ; col++){
-      colour = getColourAt(board_ptr, col, row);
+      colour = getColourAt(board_ptr, row, col);
       if(startColour != colour){
         return false;
       }
@@ -20,7 +20,6 @@ bool checkIfWon(Board_t *board_ptr){
   /*If we get to here, then everything in the board must be the same*/
   return true;
 }
-
 /*
   Starting at the top left cell, we fill in all adjacantly connected cells
   of the same colour with `fillColour`.
@@ -38,39 +37,39 @@ void updateBoard(Board_t *board_ptr, Colour_t fillColour){
 
 void updateBoardRecursive(
   Board_t *board_ptr,
-  u_char col, u_char row,
+  u_char row, u_char col,
   Colour_t fillColour, Colour_t targetColour
 ){
-  u_char nextCol;
   u_char nextRow;
+  u_char nextCol;
   Colour_t currColour;
 
   /*If the coordinate is invalid, we quit the recursion but not the game */
-  if(!isValidCoord(board_ptr, col, row)){
+  if(!isValidCoord(board_ptr, row, col)){
     return;
   }
 
-  currColour = getColourAt(board_ptr, col, row);
+  currColour = getColourAt(board_ptr, row, col);
   /*Checks that target colour is not currrent colour because we don't change the
     colour of any cells that are not the target colour/number*/
   if(targetColour != currColour){
     return;
   }
-  setColourAt(board_ptr, col, row, fillColour);
+  setColourAt(board_ptr, row, col, fillColour);
 
   nextRow = row;
   nextCol = col + NEXT_CELL;
 
-  updateBoardRecursive(board_ptr, nextCol, nextRow, fillColour, targetColour);
+  updateBoardRecursive(board_ptr, nextRow, nextCol, fillColour, targetColour);
 
   nextRow = row + NEXT_CELL;
   nextCol = col;
 
-  updateBoardRecursive(board_ptr, nextCol, nextRow, fillColour, targetColour);
+  updateBoardRecursive(board_ptr, nextRow, nextCol, fillColour, targetColour);
 
 }
 
-bool isValidCoord(Board_t *board_ptr, u_char col, u_char row){
+bool isValidCoord(Board_t *board_ptr, u_char row, u_char col){
   /*
     Col and Row are always greater than 0 because they are unsigned.
     To ensure that col and row are within the board, we compare them
@@ -93,6 +92,7 @@ void runGame(Board_t *board_ptr){
   printBoard(board_ptr);
 
 }
+/*MAJOR BUG IN HERE - TAKING IN NON DIGITS AND INFINITELY RUNNING AND ALSO MORE THAN ONE NUMBER */
 Colour_t captureInputTurn(Board_t *board_ptr, int turnCounter){
 
     Colour_t turnColour;
@@ -114,7 +114,7 @@ Colour_t captureInputTurn(Board_t *board_ptr, int turnCounter){
         We can read in a u_char and convert it into a Colout_t
       */
       inputCount = scanf("%hhu", &turnColour);
-      /* We only want to read in one thing from scanf */
+      /*We only want to read in one thing from scanf, so inputCount must be 1 */
       if(inputCount == INPUT_COUNT && isValidColour(board_ptr, turnColour)){
         /* Input has been found and is valid so we leave the while loop*/
         askingForInput = false;
@@ -125,22 +125,15 @@ Colour_t captureInputTurn(Board_t *board_ptr, int turnCounter){
       else if(errno != NO_ERROR){
         exit(-1);
       }
+
       else{
-        /* Get to here if user entered nothing or too much */
+        /* Get to here if user entered nothing or invalid input*/
         printf("Please input a number\n");
+
       }
     }
     return turnColour;
 }
-
-
-
-
-/*  while(!checkIfWon(&board)){
-      turnCounter += 1;
-      fillNumber = captureInputTurn(&board, turnCounter);
-      printf("User input is: %u \n", fillNumber);
-      updateBoard(&board, fillNumber);
-      printBoard(&board);
-  }
-*/
+bool isValidColour(Board_t *board_ptr, Colour_t colour){
+  return MIN_NUM_COLOURS <= colour && colour <= board_ptr->colourCount;
+}

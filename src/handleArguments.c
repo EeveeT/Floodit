@@ -2,10 +2,6 @@
 
 void handleArguments(int argc, char* argv[], Board_t *board_ptr){
 
-  FILE *file;
-  /* We set array to NULL to be certain the malloc operation was a success */
-  board_ptr->array2d = NULL;
-
   switch (argc){
     case 1:
         setUpDefaultBoard(board_ptr);
@@ -35,17 +31,20 @@ void setUpBoardWithLength(Board_t *board_ptr, u_char inputBoardLength){
   board_ptr->length = inputBoardLength;
   board_ptr->colourCount = DEFAULT_NUM_COLOURS;
 
-  checkBoardLenValid(board_ptr);
+  assertBoardLenValid(board_ptr);
   setUpBoardMem(board_ptr);
   fillBoard(board_ptr);
 }
 
-void setUpBoardWithLengthAndColours(Board_t *board_ptr, u_char inputBoardLength, Colour_t maxColour){
-  board_ptr->length = inputBoardLength;
-  board_ptr->colourCount = maxColour;
+void setUpBoardWithLengthAndColours(Board_t *board_ptr,
+  u_char inputBoardLength,
+  Colour_t colourCount){
 
-  checkBoardLenValid(board_ptr);
-  assertMaxColourValid(board_ptr);
+  board_ptr->length = inputBoardLength;
+  board_ptr->colourCount = colourCount;
+
+  assertBoardLenValid(board_ptr);
+  assertColourCountValid(board_ptr);
   setUpBoardMem(board_ptr);
   fillBoard(board_ptr);
 }

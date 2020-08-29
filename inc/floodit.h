@@ -15,33 +15,10 @@
 #define START_CELL 0
 #define INPUT_COUNT 1
 #define NO_ERROR 0
-/*Mac version of new line is '\lf' (line feed) and has an ASCII value of 10*/
-#define LF_CHAR 10
-/*
-   MAX_BOARD_SIZE * MAX_BOARD_SIZE + 20 '\n' chars = 420
-   To get the total length of the longest length that a FILE
-   or board could be, we multiply the MAX_BOARD_SIZE and as
-   there are MAX_BOARD_SIZE '\n' new line chars at the end
-   of each new line, this needs to be accounted for.
- */
-#define MAX_CHAR_LEN 420
-/*Like MAX_CHAR_LEN, largest line length in file is MAX_BOARD_SIZE + 1 for
- the '\n' character */
+/*Largest line length in file is MAX_BOARD_SIZE + 1 for the '\n' character */
 #define MAX_LINE_LEN (MAX_BOARD_SIZE + 1)
-/* No file.txt being fed into this program, but incase it is, we need to catch it */
-#define LARGE_LINE_NUMBER 1000
-/* For purposes of calcuating line length we want to ignore '\n'*/
-#define NEW_LINE 1
-/*
-  As with max lenths, need a lower boundary of the size the board could be
-  which is 2 x 2 + 2 '/n' new lines. You can't play on a board that is one
-  square
-*/
-#define MIN_CHAR_LEN 6
-
-
-
-
+/* Used for testing  */
+#define MAX_U_CHAR 255
 
 /*To keep things clearer, we can use Colour instead of unsigned char
   even though they are the same, just so it's neater to use Colour*/
@@ -56,27 +33,33 @@ typedef unsigned char u_char;
 typedef struct{
   u_char length;
   Colour_t colourCount;
-  /* N.B., think about renaming array2d as it's not 2d */
   Colour_t *array2d;
 } Board_t;
 
-
+/* Board Functions */
 void setUpBoardMem(Board_t *board_ptr);
 void cleanUpBoard(Board_t *board_ptr);
-void setColourAt(Board_t *board_ptr, u_char col, u_char row, Colour_t colour);
-Colour_t getColourAt(Board_t *board_ptr, u_char col, u_char row);
-Colour_t colourAt(Board_t *board_ptr, u_char col, u_char row);
-u_int getIndexFromColRow(Board_t *board_ptr, u_char col, u_char row);
+void setColourAt(Board_t *board_ptr, u_char row, u_char col, Colour_t colour);
+Colour_t getColourAt(Board_t *board_ptr, u_char row, u_char col);
+u_int getIndexFromRowCol(Board_t *board_ptr, u_char row, u_char col);
+void assertBoardLenValid(Board_t *board_ptr);
+void assertColourCountValid(Board_t *board_ptr);
 void printBoard(Board_t *board_ptr);
+Colour_t generateRandomColour(Board_t *board_ptr);
+void fillBoard(Board_t *board_ptr);
+bool isValidColour(Board_t *board_ptr, Colour_t colour);
+
+/* Handle Arguments Functions (exl. handle file)*/
 void handleArguments(int argc, char* argv[], Board_t *board_ptr);
 void setUpDefaultBoard(Board_t *board_ptr);
-void handleFileArgument(Board_t *board_ptr, FILE *file);
-void handleSecondArgumentLength(char* argv[], Board_t *board_ptr);
-void handleThirdArgumentLength(char* argv[], Board_t *board_ptr);
-void checkBoardLenValid(Board_t *board_ptr);
-void checkLineLenValid(char line[], u_char *firstLineLen_ptr);
-void checkSquareBoard(u_char col, u_char row);
-void handleBoardColours(char line[], Colour_t *maxColour_ptr);
+void setUpBoardWithLength(Board_t *board_ptr, u_char inputBoardLength);
+void setUpBoardWithLengthAndColours(Board_t *board_ptr,
+  u_char inputBoardLength,
+  Colour_t maxColour);
+void handleSingleArgument(Board_t *board_ptr, char *arg);
+void handleTwoArguments(Board_t *board_ptr, char *boardLenStr, char *maxColourStr);
+
+/* Handle File Functions */
 void handleFile(Board_t *board_ptr, FILE *file);
 u_int getLineLength(char line[]);
 void assertAllDigits(char line[], u_int lineLength);
@@ -85,16 +68,19 @@ void fillRow(Board_t *board_ptr, char line[], u_int lineLength, u_char row);
 Colour_t digitToColour(char digit);
 void findMaxColour(char line[], u_int lineLength, Colour_t *maxColour);
 bool stringIsEmpty(char string[]);
+
+/* Game Functions */
 bool checkIfWon(Board_t *board_ptr);
-Colour_t captureInputTurn(Board_t *board_ptr, int turnCounter);
-u_int generateRand(Board_t *board_ptr);
-void fillBoard(Board_t *board_ptr);
 void updateBoard(Board_t *board_ptr, Colour_t fillColour);
 void updateBoardRecursive(
   Board_t *board_ptr,
-  u_char col, u_char row,
+  u_char row, u_char col,
   Colour_t fillColour, Colour_t targetColour
 );
-bool isValidCoord(Board_t *board_ptr, u_char col, u_char row);
-bool isValidColour(Board_t *board_ptr, Colour_t colour);
-/*void handleThirdArgumentColours(int argv, char* argv[], Board_t *board_ptr);*/
+bool isValidCoord(Board_t *board_ptr, u_char row, u_char col);
+void runGame(Board_t *board_ptr);
+Colour_t captureInputTurn(Board_t *board_ptr, int turnCounter);
+
+
+/* Test Function */
+void test(void);

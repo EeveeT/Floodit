@@ -38,25 +38,25 @@ void cleanUpBoard(Board_t *board_ptr){
 
 }
 /* To fill in a single square with a colour */
-void setColourAt(Board_t *board_ptr, u_char col, u_char row, Colour_t colour){
+void setColourAt(Board_t *board_ptr, u_char row, u_char col, Colour_t colour){
 
-  u_int index = getIndexFromColRow(board_ptr, col, row);
+  u_int index = getIndexFromRowCol(board_ptr, row, col);
   board_ptr->array2d[index] = colour;
 
 
 }
 
-Colour_t getColourAt(Board_t *board_ptr, u_char col, u_char row){
+Colour_t getColourAt(Board_t *board_ptr, u_char row, u_char col){
 
 
-    u_int index = getIndexFromColRow(board_ptr, col, row);
+    u_int index = getIndexFromRowCol(board_ptr, row, col);
 
     return board_ptr->array2d[index];
 
 }
 /* As malloc only provides a strip of memory, we need to be consistent in
    indexing through a '1D' table. */
-u_int getIndexFromColRow(Board_t *board_ptr, u_char col, u_char row){
+u_int getIndexFromRowCol(Board_t *board_ptr, u_char row, u_char col){
 
   /* The part in () 'hops' along the 1D array in rows of the length of our
      board. For example, if r = 0, then this indicates the first 'chunk'.
@@ -64,13 +64,13 @@ u_int getIndexFromColRow(Board_t *board_ptr, u_char col, u_char row){
      This always gets us the beginning of the row, and c traverses
      through each cell in that row
   */
-  u_int index = col + (board_ptr->length * row);
+  u_int index = (board_ptr->length * row) + col;
 
   return index;
 
 }
 /*change to assert */
-void checkBoardLenValid(Board_t *board_ptr){
+void assertBoardLenValid(Board_t *board_ptr){
 
   if(board_ptr->length < MIN_BOARD_SIZE){
     fprintf(stderr, "Board size too small, must be between 2-20.\n");
@@ -82,27 +82,27 @@ void checkBoardLenValid(Board_t *board_ptr){
   }
 }
 
-void assertMaxColourValid(Board_t *board_ptr){
+void assertColourCountValid(Board_t *board_ptr){
   if(board_ptr->colourCount < MIN_NUM_COLOURS){
-    fprintf(stderr, "Max colour is too small\n");
+    fprintf(stderr, "Colour is too small\n");
     exit(-1);
   }
   if(board_ptr->colourCount > MAX_NUM_COLOURS){
-    fprintf(stderr, "Max colour is too large\n");
+    fprintf(stderr, "Colour is too large\n");
     exit(-1);
   }
 }
 
 void printBoard(Board_t *board_ptr){
 
-  u_char col;
   u_char row;
+  u_char col;
   u_char len = board_ptr->length;
   Colour_t colour;
 
   for(row = 0; row < len; row++){
     for(col = 0; col < len; col++){
-      colour = getColourAt(board_ptr, col, row);
+      colour = getColourAt(board_ptr, row, col);
       printf("%d", colour);
     }
     printf("\n");
@@ -124,18 +124,14 @@ Colour_t generateRandomColour(Board_t *board_ptr){
 void fillBoard(Board_t *board_ptr){
 
   u_char len = board_ptr->length;
-  int col;
   int row;
+  int col;
   Colour_t colour;
 
-  for(col = 0; col < len ; col++){
-    for(row = 0; row < len ; row++){
+  for(row = 0; row < len ; row++){
+    for(col = 0; col < len ; col++){
       colour = generateRandomColour(board_ptr);
-      setColourAt(board_ptr, col, row, colour);
+      setColourAt(board_ptr, row, col, colour);
     }
   }
-}
-
-bool isValidColour(Board_t *board_ptr, Colour_t colour){
-  return MIN_NUM_COLOURS <= colour && colour <= board_ptr->colourCount;
 }

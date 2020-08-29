@@ -21,7 +21,7 @@ void handleFile(Board_t *board_ptr, FILE *file){
     exit(-1);
   }
   board_ptr->colourCount = maxColour;
-  printBoard(board_ptr);
+
 }
 
 u_int getLineLength(char line[]){
