@@ -56,6 +56,7 @@ void handleSingleArgument(Board_t *board_ptr, char *arg){
   FILE *file;
 
   inputCount = sscanf(arg, "%hhu", &boardSize);
+  /* We know input is a number as sscanf returns */
   if(inputCount == INPUT_COUNT){
     setUpBoardWithLength(board_ptr, boardSize);
   }
@@ -70,10 +71,10 @@ void handleSingleArgument(Board_t *board_ptr, char *arg){
   }
 }
 
-void handleTwoArguments(Board_t *board_ptr, char *boardLenStr, char *maxColourStr){
+void handleTwoArguments(Board_t *board_ptr, char *boardLenStr, char *colourCountStr){
 
   int inputCount;
-  Colour_t maxColour;
+  Colour_t colourCount;
   u_char boardSize;
 
   inputCount = sscanf(boardLenStr, "%hhu", &boardSize);
@@ -81,12 +82,12 @@ void handleTwoArguments(Board_t *board_ptr, char *boardLenStr, char *maxColourSt
     fprintf(stderr, "Please enter a number for board size.\n");
     exit(-1);
   }
-  inputCount = sscanf(maxColourStr, "%hhu", &maxColour);
+  inputCount = sscanf(colourCountStr, "%hhu", &colourCount);
   if(inputCount != INPUT_COUNT){
     fprintf(stderr, "Please enter a number of colours.\n");
     exit(-1);
   }
 
-  setUpBoardWithLengthAndColours(board_ptr, boardSize, maxColour);
+  setUpBoardWithLengthAndColours(board_ptr, boardSize, colourCount);
 
 }

@@ -7,8 +7,17 @@ void test(void){
   u_char row;
   u_char column;
   Colour_t testColour;
-  int i;
+  Colour_t testFloodColour;
+  u_int i;
   u_int index;
+  char testDigit;
+  char testLine[5] = {'1', '2', '3', '4', '\n'};
+  char testLineEmpty[1] = {'\0'};
+  u_int testLineLen;
+  u_char boardSize_testPtr = 0;
+  Colour_t testArray[9] = {1,2,3,2,3,1,3,1,2};
+  Colour_t targetArray[9] = {'2', '2', '3','2', '3', '1', '3', '1', '2'};
+
   /*----------------------------- Board Functions---------------------------- */
   /* Test for valid board length values*/
   for(testBoard.length = MIN_BOARD_SIZE; testBoard.length <= MAX_BOARD_SIZE; testBoard.length++){
@@ -22,11 +31,11 @@ void test(void){
   /*Set variables to values that we can test */
   testBoard.length = DEFAULT_BOARD_SIZE;
   testBoard.colourCount = MAX_NUM_COLOURS;
-  testBoard.array2d = NULL;
+  testBoard.colourArray = NULL;
 
   setUpBoardMem(&testBoard);
   /* Now that memory for the board array has been set up, it should not be NULL*/
-  assert(testBoard.array2d != NULL);
+  assert(testBoard.colourArray != NULL);
 
   for(testColour = MIN_NUM_COLOURS; testColour <= MAX_NUM_COLOURS; testColour++){
     /*Each of these colours up to and including the max colour should be valid*/
@@ -67,7 +76,7 @@ void test(void){
   /* Use memset to set fillBoard function fills only valid colours
     we put in a value we know are or should be invalid, such as MAX_U_CHAR(255)
     into each cell in the board*/
-  memset(testBoard.array2d, MAX_U_CHAR, (testBoard.length * testBoard.length));
+  memset(testBoard.colourArray, MAX_U_CHAR, (testBoard.length * testBoard.length));
   fillBoard(&testBoard);
   for(row = 0; row < testBoard.length; row++){
     for(column = 0; column < testBoard.length; column++){
@@ -76,8 +85,100 @@ void test(void){
 
     }
   }
+  printf("Board Functions have passed tests\n");
   /*------------------------ Handle Arguments Functions--------------------- */
 
+  /*Test that if the defult board is run, we get the default length and colours*/
+  setUpDefaultBoard(&testBoard);
+  assert(testBoard.length == DEFAULT_BOARD_SIZE);
+  assert(testBoard.colourCount == DEFAULT_NUM_COLOURS);
+
+  /*5 is just an arbitury number for a valid board length */
+  setUpBoardWithLength(&testBoard, 5);
+  assert(testBoard.length == 5);
+  assert(testBoard.colourCount == DEFAULT_NUM_COLOURS);
+
+  /* Here again, testing with a random arbitury valid number for length and colourCount*/
+  setUpBoardWithLengthAndColours(&testBoard, 10, 7);
+  assert(testBoard.length == 10);
+  assert(testBoard.colourCount == 7);
+
+
+  /*------------------------- Handle File Functions------------------------- */
+  /* Declare an array but place nothing in it*/
+  assert(stringIsEmpty(testLineEmpty) == true);
+  assert(stringIsEmpty(testLine) == false);
+
+  testLineLen = getLineLength(testLine);
+  /* As we want to 'ignore' '\n', we expect 4*/
+  assert(testLineLen == 4);
+
+  testDigit = '5';
+  testColour = digitToColour(testDigit);
+  assert(testColour == 5);
+
+
+  /* */
+  assertAllDigits(testLine, testLineLen);
+
+ /*Handle Line Length sets the first line length and then ensures all lines after
+  the first line in a board are the same length. 10 is an arbitury random number
+  that we set as the length of the first line*/
+  handleLineLength(&testBoard, &boardSize_testPtr, (u_int)10);
+  assert(testBoard.length == 10);
+
+
+  /* Reset row so ensure we know that it is. 1 is just an arbitury valid number*/
+  row = 1;
+  fillRow(&testBoard, testLine, testLineLen, row);
+  for(column = 0; column < testLineLen; column++){
+      testColour = digitToColour(testLine[column]);
+      assert(getColourAt(&testBoard, row, column) == testColour);
+  }
+
+  /* Reset test colour to 0 so we know what it is*/
+  testColour = 0;
+  findColourCount(testLine, testLineLen, &testColour);
+  /* The highest in our testline is a 4, so we expect colour count to be 4*/
+  assert(testColour == 4);
+
+  printf("Some handle file functions have passed\n");
+
+  /*---------------------------- Game Functions--------------------------- */
+
+  testBoard.length = DEFAULT_BOARD_SIZE;
+  /* We reset board length and fill the board with one number, such as 5- FINISH THIS COMMENT---*/
+  memset(testBoard.colourArray, 5, (testBoard.length * testBoard.length));
+  assert(checkIfWon(&testBoard) == true);
+  /* We clear up this board we have been using and then set up a new one*/
+  cleanUpBoard(&testBoard);
+
+
+  testBoard.length = 3;
+  setUpBoardMem(&testBoard);
+  testBoard.colourCount = 3;
+  testBoard.colourArray = testArray;
+
+
+  testColour = 2;
+  index = 0;
+  printBoard(&testBoard);
+  updateBoard(&testBoard, testColour);
+
+  printBoard(&testBoard);
+  for(row = 0; row < testBoard.length; row++){
+    for(column = 0; column < testBoard.length; column++){
+      testFloodColour = getColourAt(&testBoard, row, column);
+      index = getIndexFromRowCol(&testBoard, row, column);
+      testColour = digitToColour(targetArray[index]);
+      printf("test flood colour: %u\n", testFloodColour);
+      printf("target array idex is: %u\n", testColour);
+      printf("index is: %u\n",index);
+      assert(testFloodColour == testColour);
+      printf("after assert-----------\n" );
+    }
+  }
+  printf("after for loops\n" );
 
 
 
@@ -92,10 +193,10 @@ void test(void){
 
 
 
+/*------------------------------- End of Tests------------------------------- */
 
-
-
-  /* Difficult to test that the pointer has been freed */
+  /* Difficult to test that the pointer has been freed. We need to cleanUpBoard
+     now we have finished with it though */
   cleanUpBoard(&testBoard);
 
   printf("Tests successfully passed\n");

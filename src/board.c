@@ -10,7 +10,7 @@ void setUpBoardMem(Board_t *board_ptr){
       we set the array to NULL so we know what it is and this will be caught
       later as an error
     */
-    board_ptr->array2d = NULL;
+    board_ptr->colourArray = NULL;
     return;
   }
 
@@ -21,9 +21,9 @@ void setUpBoardMem(Board_t *board_ptr){
     As malloc doesn't know what type to return, represented as void*, we
     instruct (type caste) it to return our Colour_t instead
   */
-  board_ptr->array2d = (Colour_t*)malloc(len * len * sizeof(Colour_t));
+  board_ptr->colourArray = (Colour_t*)malloc(len * len * sizeof(Colour_t));
 
-  if(board_ptr->array2d == NULL){
+  if(board_ptr->colourArray == NULL){
     fprintf(stderr, "Error, could not allocate memory for the board.\n");
     exit(-1);
   }
@@ -34,30 +34,29 @@ void setUpBoardMem(Board_t *board_ptr){
 */
 void cleanUpBoard(Board_t *board_ptr){
 
-  free(board_ptr->array2d);
+  free(board_ptr->colourArray);
 
 }
 /* To fill in a single square with a colour */
 void setColourAt(Board_t *board_ptr, u_char row, u_char col, Colour_t colour){
 
   u_int index = getIndexFromRowCol(board_ptr, row, col);
-  board_ptr->array2d[index] = colour;
+  board_ptr->colourArray[index] = colour;
 
 }
 
 Colour_t getColourAt(Board_t *board_ptr, u_char row, u_char col){
 
-
     u_int index = getIndexFromRowCol(board_ptr, row, col);
 
-    return board_ptr->array2d[index];
+    return board_ptr->colourArray[index];
 
 }
 /* As malloc only provides a strip of memory, we need to be consistent in
    indexing through a '1D' table. */
 u_int getIndexFromRowCol(Board_t *board_ptr, u_char row, u_char col){
 
-  /* The part in () 'hops' along the 1D array in rows of the length of our
+  /* The part in () 'hops' along the array in rows of the length of our
      board. For example, if r = 0, then this indicates the first 'chunk'.
      If r = 2, then we would be in the second row of the length of the board.
      This always gets us the beginning of the row, and c traverses
@@ -102,7 +101,7 @@ void printBoard(Board_t *board_ptr){
   for(row = 0; row < len; row++){
     for(col = 0; col < len; col++){
       colour = getColourAt(board_ptr, row, col);
-      printf("%d", colour);
+      printf("%u", colour);
     }
     printf("\n");
   }

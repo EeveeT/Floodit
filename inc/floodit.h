@@ -12,9 +12,9 @@
 #define MAX_NUM_COLOURS 9
 #define MIN_NUM_COLOURS 1
 #define NEXT_CELL 1
+#define PREV_CELL (-1)
 #define START_CELL 0
 #define INPUT_COUNT 1
-#define NO_ERROR 0
 /*Largest line length in file is MAX_BOARD_SIZE + 1 for the '\n' character */
 #define MAX_LINE_LEN (MAX_BOARD_SIZE + 1)
 /* Used for testing  */
@@ -33,7 +33,7 @@ typedef unsigned char u_char;
 typedef struct{
   u_char length;
   Colour_t colourCount;
-  Colour_t *array2d;
+  Colour_t *colourArray;
 } Board_t;
 
 /* Board Functions */
@@ -56,27 +56,31 @@ void setUpDefaultBoard(Board_t *board_ptr);
 void setUpBoardWithLength(Board_t *board_ptr, u_char inputBoardLength);
 void setUpBoardWithLengthAndColours(Board_t *board_ptr,
   u_char inputBoardLength,
-  Colour_t maxColour);
+  Colour_t colourCount);
 void handleSingleArgument(Board_t *board_ptr, char *arg);
-void handleTwoArguments(Board_t *board_ptr, char *boardLenStr, char *maxColourStr);
+void handleTwoArguments(Board_t *board_ptr,
+  char *boardLenStr,
+  char *colourCountStr);
 
 /* Handle File Functions */
 void handleFile(Board_t *board_ptr, FILE *file);
 u_int getLineLength(char line[]);
 void assertAllDigits(char line[], u_int lineLength);
-void handleLineLength(Board_t *board_ptr, u_char *boardSize_ptr, u_int lineLength);
+void handleLineLength(Board_t *board_ptr,
+  u_char *boardSize_ptr,
+  u_int lineLength);
 void fillRow(Board_t *board_ptr, char line[], u_int lineLength, u_char row);
 Colour_t digitToColour(char digit);
-void findMaxColour(char line[], u_int lineLength, Colour_t *maxColour);
+void findColourCount(char line[], u_int lineLength, Colour_t *colourCount);
 bool stringIsEmpty(char string[]);
 
 /* Game Functions */
 bool checkIfWon(Board_t *board_ptr);
-void updateBoard(Board_t *board_ptr, Colour_t fillColour);
+void updateBoard(Board_t *board_ptr, Colour_t floodColour);
 void updateBoardRecursive(
   Board_t *board_ptr,
   u_char row, u_char col,
-  Colour_t fillColour, Colour_t targetColour
+  Colour_t floodColour, Colour_t targetColour
 );
 void runGame(Board_t *board_ptr);
 Colour_t captureInputTurn(Board_t *board_ptr, int turnCounter);

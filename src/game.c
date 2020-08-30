@@ -1,6 +1,5 @@
 #include "floodit.h"
 
-
 bool checkIfWon(Board_t *board_ptr){
 
   u_char len = board_ptr->length;
@@ -20,54 +19,6 @@ bool checkIfWon(Board_t *board_ptr){
   /*If we get to here, then everything in the board must be the same*/
   return true;
 }
-/*
-  Starting at the top left cell, we fill in all adjacantly connected cells
-  of the same colour with `fillColour`.
-*/
-void updateBoard(Board_t *board_ptr, Colour_t fillColour){
-
-  Colour_t targetColour = getColourAt(board_ptr, START_CELL, START_CELL);
-
-  updateBoardRecursive(
-    board_ptr,
-    START_CELL, START_CELL,
-    fillColour, targetColour
-  );
-}
-
-void updateBoardRecursive(
-  Board_t *board_ptr,
-  u_char row, u_char col,
-  Colour_t fillColour, Colour_t targetColour
-){
-  u_char nextRow;
-  u_char nextCol;
-  Colour_t currColour;
-
-  /*If the coordinate is invalid, we quit the recursion but not the game */
-  if(!isValidCoord(board_ptr, row, col)){
-    return;
-  }
-
-  currColour = getColourAt(board_ptr, row, col);
-  /*Checks that target colour is not currrent colour because we don't change the
-    colour of any cells that are not the target colour/number*/
-  if(targetColour != currColour){
-    return;
-  }
-  setColourAt(board_ptr, row, col, fillColour);
-
-  nextRow = row;
-  nextCol = col + NEXT_CELL;
-
-  updateBoardRecursive(board_ptr, nextRow, nextCol, fillColour, targetColour);
-
-  nextRow = row + NEXT_CELL;
-  nextCol = col;
-
-  updateBoardRecursive(board_ptr, nextRow, nextCol, fillColour, targetColour);
-
-}
 
 void runGame(Board_t *board_ptr){
   u_int turnCounter = 0;
@@ -83,7 +34,74 @@ void runGame(Board_t *board_ptr){
   printBoard(board_ptr);
 
 }
-/*MAJOR BUG IN HERE - TAKING IN NON DIGITS AND INFINITELY RUNNING AND ALSO MORE THAN ONE NUMBER */
+/*
+  Starting at the top left cell, we fill in all adjacantly connected cells
+  of the same colour with `floodColour`.
+*/
+void updateBoard(Board_t *board_ptr, Colour_t floodColour){
+
+  Colour_t targetColour = getColourAt(board_ptr, START_CELL, START_CELL);
+
+  /*If target and flood colour are the same, we don't bother updating the board
+    as it is already in the state it should be in. It is not an invalid move.*/
+  if(targetColour != floodColour){
+    updateBoardRecursive(
+      board_ptr,
+      START_CELL, START_CELL,
+      floodColour, targetColour
+    );
+  }
+}
+/*
+  The target `colour` is the colour we're replacing if it is the colour in the
+  top left hand corner. We replace this with the user inputed floodColour.
+*/
+void updateBoardRecursive(
+  Board_t *board_ptr,
+  u_char row, u_char col,
+  Colour_t floodColour, Colour_t targetColour
+){
+  u_char nextRow;
+  u_char nextCol;
+  u_char prevRow;
+  u_char prevCol;
+  Colour_t currColour;
+
+  /*If the coordinate is invalid, we quit the recursion but not the game */
+  if(!isValidCoord(board_ptr, row, col)){
+    return;
+  }
+
+  currColour = getColourAt(board_ptr, row, col);
+  /*Checks that target colour is not currrent colour because we don't change the
+    colour of any cells that are not the target colour/number*/
+  if(targetColour != currColour){
+    return;
+  }
+  setColourAt(board_ptr, row, col, floodColour);
+
+  nextRow = row;
+  nextCol = col + NEXT_CELL;
+
+  updateBoardRecursive(board_ptr, nextRow, nextCol, floodColour, targetColour);
+
+  prevRow = row;
+  prevCol = col + PREV_CELL;
+
+  updateBoardRecursive(board_ptr, prevRow, prevCol, floodColour, targetColour);
+
+  nextRow = row + NEXT_CELL;
+  nextCol = col;
+
+  updateBoardRecursive(board_ptr, nextRow, nextCol, floodColour, targetColour);
+
+  prevRow = row + PREV_CELL;
+  prevCol = col;
+
+  updateBoardRecursive(board_ptr, prevRow, prevCol, floodColour, targetColour);
+
+}
+
 Colour_t captureInputTurn(Board_t *board_ptr, int turnCounter){
 
     Colour_t turnColour;
@@ -91,14 +109,8 @@ Colour_t captureInputTurn(Board_t *board_ptr, int turnCounter){
     int inputCount;
 
     while (askingForInput) {
+      fflush(stdin);
       printf("Turn %d: What number? ", turnCounter);
-      /*
-        Error number (errno) is where most functions report errors.
-        This clears out all errors so we know any errors that do occur are
-        related to scanf
-        Ref: https://linux.die.net/man/3/errno
-      */
-      errno =  NO_ERROR;
       /*
         u  = unsigned decimal number (default u_int)
         hh = use a char/u_char
@@ -111,16 +123,12 @@ Colour_t captureInputTurn(Board_t *board_ptr, int turnCounter){
         askingForInput = false;
       }
       else if(inputCount == INPUT_COUNT){
-        printf("Please input a valid colour\n");
+        printf("Please input a colour between %d and %u\n",
+                MIN_NUM_COLOURS, board_ptr->colourCount);
       }
-      else if(errno != NO_ERROR){
-        exit(-1);
-      }
-
       else{
-        /* Get to here if user entered nothing or invalid input*/
+        /* Get to here if user entered nothing or a non-numeric*/
         printf("Please input a number\n");
-
       }
     }
     return turnColour;
