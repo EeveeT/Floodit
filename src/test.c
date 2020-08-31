@@ -4,10 +4,11 @@
 
 void test(void){
   Board_t testBoard;
+  //Board_t testBoard;
   u_char row;
   u_char column;
   Colour_t testColour;
-  Colour_t testFloodColour;
+  Colour_t expectedSolutionColour;
   u_int i;
   u_int index;
   char testDigit;
@@ -16,7 +17,7 @@ void test(void){
   u_int testLineLen;
   u_char boardSize_testPtr = 0;
   Colour_t testArray[9] = {1,2,3,2,3,1,3,1,2};
-  Colour_t targetArray[9] = {'2', '2', '3','2', '3', '1', '3', '1', '2'};
+  Colour_t expectedSolutionArray[9] = {'2','2','3','2','3','1','3','1','2'};
 
   /*----------------------------- Board Functions---------------------------- */
   /* Test for valid board length values*/
@@ -62,7 +63,6 @@ void test(void){
     for(column = 0; column < testBoard.length; column++){
       assert(getIndexFromRowCol(&testBoard, row, column) == index);
       index += 1;
-
     }
   }
   /* We test setting and getting a colour for each cell in the board*/
@@ -82,7 +82,6 @@ void test(void){
     for(column = 0; column < testBoard.length; column++){
       testColour = getColourAt(&testBoard, row, column);
       assert(isValidColour(&testBoard, testColour));
-
     }
   }
   printf("Board Functions have passed tests\n");
@@ -150,15 +149,17 @@ void test(void){
   /* We reset board length and fill the board with one number, such as 5- FINISH THIS COMMENT---*/
   memset(testBoard.colourArray, 5, (testBoard.length * testBoard.length));
   assert(checkIfWon(&testBoard) == true);
-  /* We clear up this board we have been using and then set up a new one*/
-  cleanUpBoard(&testBoard);
+
+  //cleanUpBoard(&testBoard);
 
 
   testBoard.length = 3;
-  setUpBoardMem(&testBoard);
   testBoard.colourCount = 3;
-  testBoard.colourArray = testArray;
+  //testBoard.colourArray = NULL;
+  //setUpBoardMem(&testBoard);
 
+
+  memcpy(testBoard.colourArray, testArray, (Colour_t*)(testBoard.length * testBoard.length * sizeof(Colour_t*)));
 
   testColour = 2;
   index = 0;
@@ -168,17 +169,23 @@ void test(void){
   printBoard(&testBoard);
   for(row = 0; row < testBoard.length; row++){
     for(column = 0; column < testBoard.length; column++){
-      testFloodColour = getColourAt(&testBoard, row, column);
+      // extract colpur from expected sol
       index = getIndexFromRowCol(&testBoard, row, column);
-      testColour = digitToColour(targetArray[index]);
-      printf("test flood colour: %u\n", testFloodColour);
+      expectedSolutionColour = digitToColour(expectedSolutionArray[index]);
+      // exptract col from actual output
+      testColour = getColourAt(&testBoard, row, column);
+
+
+      printf("test flood colour: %u\n", expectedSolutionColour);
       printf("target array idex is: %u\n", testColour);
       printf("index is: %u\n",index);
-      assert(testFloodColour == testColour);
+      assert(expectedSolutionColour == testColour);
       printf("after assert-----------\n" );
     }
   }
   printf("after for loops\n" );
+  cleanUpBoard(&testBoard);
+
 
 
 
@@ -197,7 +204,7 @@ void test(void){
 
   /* Difficult to test that the pointer has been freed. We need to cleanUpBoard
      now we have finished with it though */
-  cleanUpBoard(&testBoard);
+
 
   printf("Tests successfully passed\n");
 }

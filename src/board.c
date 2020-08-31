@@ -13,7 +13,6 @@ void setUpBoardMem(Board_t *board_ptr){
     board_ptr->colourArray = NULL;
     return;
   }
-
   /* malloc can only give us a strip in memory, we need length*length for the
     total number of cells (the complete table as one long strip), and we also
     need to calculate how much memory each "Colour_t" will take up
