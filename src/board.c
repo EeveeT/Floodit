@@ -66,7 +66,7 @@ u_int getIndexFromRowCol(Board_t *board_ptr, u_char row, u_char col){
   return index;
 
 }
-/*change to assert */
+
 void assertBoardLenValid(Board_t *board_ptr){
 
   if(board_ptr->length < MIN_BOARD_SIZE){

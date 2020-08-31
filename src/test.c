@@ -4,7 +4,6 @@
 
 void test(void){
   Board_t testBoard;
-  //Board_t testBoard;
   u_char row;
   u_char column;
   Colour_t testColour;
@@ -84,7 +83,7 @@ void test(void){
       assert(isValidColour(&testBoard, testColour));
     }
   }
-  printf("Board Functions have passed tests\n");
+
   /*------------------------ Handle Arguments Functions--------------------- */
 
   /*Test that if the defult board is run, we get the default length and colours*/
@@ -115,9 +114,6 @@ void test(void){
   testDigit = '5';
   testColour = digitToColour(testDigit);
   assert(testColour == 5);
-
-
-  /* */
   assertAllDigits(testLine, testLineLen);
 
  /*Handle Line Length sets the first line length and then ensures all lines after
@@ -141,25 +137,19 @@ void test(void){
   /* The highest in our testline is a 4, so we expect colour count to be 4*/
   assert(testColour == 4);
 
-  printf("Some handle file functions have passed\n");
-
   /*---------------------------- Game Functions--------------------------- */
 
   testBoard.length = DEFAULT_BOARD_SIZE;
-  /* We reset board length and fill the board with one number, such as 5- FINISH THIS COMMENT---*/
+  /* We reset board length and fill the board with one number, such as 5 and
+     assert all numbers in the board are the same to check if we have won */
   memset(testBoard.colourArray, 5, (testBoard.length * testBoard.length));
   assert(checkIfWon(&testBoard) == true);
-
-  //cleanUpBoard(&testBoard);
 
 
   testBoard.length = 3;
   testBoard.colourCount = 3;
-  //testBoard.colourArray = NULL;
-  //setUpBoardMem(&testBoard);
 
-
-  memcpy(testBoard.colourArray, testArray, (Colour_t*)(testBoard.length * testBoard.length * sizeof(Colour_t*)));
+  memcpy(testBoard.colourArray, testArray, (Colour_t)(testBoard.length * testBoard.length * sizeof(Colour_t*)));
 
   testColour = 2;
   index = 0;
@@ -169,42 +159,20 @@ void test(void){
   printBoard(&testBoard);
   for(row = 0; row < testBoard.length; row++){
     for(column = 0; column < testBoard.length; column++){
-      // extract colpur from expected sol
+      /* Extract colour from expected solution */
       index = getIndexFromRowCol(&testBoard, row, column);
       expectedSolutionColour = digitToColour(expectedSolutionArray[index]);
-      // exptract col from actual output
+      /* Extract colour from actual output */
       testColour = getColourAt(&testBoard, row, column);
-
-
-      printf("test flood colour: %u\n", expectedSolutionColour);
-      printf("target array idex is: %u\n", testColour);
-      printf("index is: %u\n",index);
       assert(expectedSolutionColour == testColour);
-      printf("after assert-----------\n" );
     }
   }
-  printf("after for loops\n" );
-  cleanUpBoard(&testBoard);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*------------------------------- End of Tests------------------------------- */
 
   /* Difficult to test that the pointer has been freed. We need to cleanUpBoard
      now we have finished with it though */
-
+  cleanUpBoard(&testBoard);
 
   printf("Tests successfully passed\n");
 }
