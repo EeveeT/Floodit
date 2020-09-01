@@ -259,13 +259,6 @@ void test(void){
   assert(memcmp(arrayBackUp, testBoard.colourArray, testBoard.length * testBoard.length * sizeof(Colour_t)) == 0);
 
 
-
-
-
-
-
-
-
 /*------------------------------- End of Tests------------------------------- */
 
   /* Difficult to test that the pointer has been freed. We need to cleanUpBoard
