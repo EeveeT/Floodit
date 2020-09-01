@@ -170,9 +170,12 @@ void test(void){
   /* The highest in our testline is a 4, so we expect colour count to be 4*/
   assert(testColour == 4);
 
+  cleanUpBoard(&testBoard);
+
   /*---------------------------- Game Functions--------------------------- */
 
   testBoard.length = DEFAULT_BOARD_SIZE;
+  setUpBoardMem(&testBoard);
   /* We reset board length and fill the board with one number, such as 5 and
      assert all numbers in the board are the same to check if we have won */
   memset(testBoard.colourArray, 5, (testBoard.length * testBoard.length));
