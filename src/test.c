@@ -257,7 +257,7 @@ void test(void){
   updateBoardRecursive(&testBoard, 6, 4, 3, 2);
 
   assert(memcmp(arrayBackUp, testBoard.colourArray, testBoard.length * testBoard.length * sizeof(Colour_t)) == 0);
-
+  free(arrayBackUp);
 
 /*------------------------------- End of Tests------------------------------- */
 
