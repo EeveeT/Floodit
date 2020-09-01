@@ -149,7 +149,7 @@ void test(void){
   testBoard.length = 3;
   testBoard.colourCount = 3;
 
-  memcpy(testBoard.colourArray, testArray, (testBoard.length * testBoard.length * sizeof(Colour_t*)));
+  memcpy(testBoard.colourArray, testArray, (testBoard.length * testBoard.length * sizeof(Colour_t)));
 
   testColour = 2;
   index = 0;
