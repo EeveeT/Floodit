@@ -134,7 +134,7 @@ Result_t readInUChar(u_char *inputUChar_ptr){
   u_int userInput = 0;
 
 
-  inputCount = scanf("%u", &userInput);
+  inputCount = scanf(" %u", &userInput);
 
   fflush(stdin);
 
