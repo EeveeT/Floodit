@@ -14,7 +14,9 @@ else{
         THIS board here in main
     */
     Board_t board;
-    handleArguments(argc, argv, &board);
+    if(handleArguments(argc, argv, &board) == failed){
+      return -1;
+    }
     /*The & enables the function to access the address in memory
       to where board is stored */
     /*if(!setUpBoardMem(&board, board.length)){

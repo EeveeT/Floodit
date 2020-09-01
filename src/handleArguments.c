@@ -33,6 +33,7 @@ Result_t setUpBoardWithLength(Board_t *board_ptr, u_char inputBoardLength){
   if(isBoardLenValid(board_ptr) == false){
     return failed;
   }
+
   setUpBoardMem(board_ptr);
   fillBoard(board_ptr);
 
@@ -67,6 +68,7 @@ Result_t handleSingleArgument(Board_t *board_ptr, char *arg){
   if(readInUCharFromString(arg, &boardSize) == succeeded){
     return setUpBoardWithLength(board_ptr, boardSize);
   }
+
 
   file = fopen(arg, "r");
   if(file == NULL){

@@ -30,9 +30,7 @@ void runGame(Board_t *board_ptr){
     floodColour = captureInputTurn(board_ptr, turnCounter);
     updateBoard(board_ptr, floodColour);
   }
-
   printBoard(board_ptr);
-
 }
 /*
   Starting at the top left cell, we fill in all adjacantly connected cells
