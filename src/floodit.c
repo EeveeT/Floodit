@@ -28,7 +28,9 @@ else{
   }
   return 0;
 }
-
+/* So that we don't get hundreds of print statements when testing that invalid
+   arguments passed into functions when testing, we only print error messages
+   when playing the game to help a user*/
 void logError(char* errorMessage){
   if(!TEST){
     fprintf(stderr, "%s", errorMessage);

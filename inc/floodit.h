@@ -73,7 +73,7 @@ Result_t readInUCharFromString(char *inputStr, u_char *inputUChar_ptr);
 Result_t handleFile(Board_t *board_ptr, FILE *file);
 u_int getLineLength(char line[]);
 bool isAllDigits(char line[], u_int lineLength);
-Result_t handleLineLength(Board_t *board_ptr,
+void handleLineLength(Board_t *board_ptr,
   u_char *boardSize_ptr,
   u_int lineLength);
 void fillRow(Board_t *board_ptr, char line[], u_int lineLength, u_char row);

@@ -51,7 +51,7 @@ bool isAllDigits(char line[], u_int lineLength){
   return true;
 }
 
-Result_t handleLineLength(Board_t *board_ptr,
+void handleLineLength(Board_t *board_ptr,
   u_char *boardSize_ptr,
   u_int lineLength){
   /*boardSize_ptr is the first line. When it is 0, we know it has not been set yet*/
@@ -65,9 +65,8 @@ Result_t handleLineLength(Board_t *board_ptr,
     current length is the same as the first line*/
   else if(*boardSize_ptr != lineLength){
     logError("Incorrect line length\n");
-    return failed;
+    exit(-1);
   }
-  return succeeded;
 }
 
 void fillRow(Board_t *board_ptr, char line[], u_int lineLength, u_char row){
