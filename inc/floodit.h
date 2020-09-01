@@ -15,6 +15,7 @@
 #define PREV_CELL (-1)
 #define START_CELL 0
 #define INPUT_COUNT 1
+#define NO_ERROR 0
 /*Largest line length in file is MAX_BOARD_SIZE + 1 for the '\n' character */
 #define MAX_LINE_LEN (MAX_BOARD_SIZE + 1)
 /* Used for testing  */

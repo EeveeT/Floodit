@@ -135,6 +135,7 @@ Result_t readInUChar(u_char *inputUChar_ptr){
 
   fflush(stdin);
 
+  errno = NO_ERROR;
   inputCount = scanf("%u", &userInput);
 
   if(userInput > MAX_U_CHAR){
@@ -148,6 +149,10 @@ Result_t readInUChar(u_char *inputUChar_ptr){
   if(inputCount == 1){
     *inputUChar_ptr = userInput;
     return succeeded;
+  }
+  else if(errno != NO_ERROR){
+    /*This is a fatal error where scanf hasn't worked */
+    exit(-1);
   }
   else{
     return failed;
