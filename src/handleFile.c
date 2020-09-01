@@ -64,7 +64,7 @@ void handleLineLength(Board_t *board_ptr,
   /*For all other lines after the first line in the board, we check that the
     current length is the same as the first line*/
   else if(*boardSize_ptr != lineLength){
-    logError("Incorrect line length\n");
+    logError("Incorrect line lengths in the board\n");
     exit(-1);
   }
 }
