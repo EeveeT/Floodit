@@ -26,6 +26,11 @@ typedef unsigned char Colour_t;
 typedef unsigned int u_int;
 typedef unsigned char u_char;
 
+/* */
+typedef enum{
+  failed = false, succeeded = true
+} Result_t;
+
 /*As the max board size is 20, we can use and u_char because we don't
   want negative numbers which an unsigned numeric type ensures. We don't need
   more than 1 btye of memory for the board size, so char would be more efficient
@@ -51,22 +56,23 @@ bool isValidCoord(Board_t *board_ptr, u_char row, u_char col);
 bool isValidColour(Board_t *board_ptr, Colour_t colour);
 
 /* Handle Arguments Functions (exl. handle file)*/
-void handleArguments(int argc, char* argv[], Board_t *board_ptr);
-void setUpDefaultBoard(Board_t *board_ptr);
-void setUpBoardWithLength(Board_t *board_ptr, u_char inputBoardLength);
-void setUpBoardWithLengthAndColours(Board_t *board_ptr,
+Result_t handleArguments(int argc, char* argv[], Board_t *board_ptr);
+Result_t setUpDefaultBoard(Board_t *board_ptr);
+Result_t setUpBoardWithLength(Board_t *board_ptr, u_char inputBoardLength);
+Result_t setUpBoardWithLengthAndColours(Board_t *board_ptr,
   u_char inputBoardLength,
   Colour_t colourCount);
-void handleSingleArgument(Board_t *board_ptr, char *arg);
-void handleTwoArguments(Board_t *board_ptr,
+Result_t handleSingleArgument(Board_t *board_ptr, char *arg);
+Result_t handleTwoArguments(Board_t *board_ptr,
   char *boardLenStr,
   char *colourCountStr);
+Result_t readInUCharFromString(char *inputStr, u_char *inputUChar_ptr);
 
 /* Handle File Functions */
-void handleFile(Board_t *board_ptr, FILE *file);
+Result_t handleFile(Board_t *board_ptr, FILE *file);
 u_int getLineLength(char line[]);
-void assertAllDigits(char line[], u_int lineLength);
-void handleLineLength(Board_t *board_ptr,
+bool isAllDigits(char line[], u_int lineLength);
+Result_t handleLineLength(Board_t *board_ptr,
   u_char *boardSize_ptr,
   u_int lineLength);
 void fillRow(Board_t *board_ptr, char line[], u_int lineLength, u_char row);
@@ -84,6 +90,7 @@ void updateBoardRecursive(
 );
 void runGame(Board_t *board_ptr);
 Colour_t captureInputTurn(Board_t *board_ptr, int turnCounter);
+Result_t readInUChar(u_char *inputUChar_ptr);
 
 
 /* Test Function */

@@ -24,6 +24,5 @@ else{
     /*When user quits or wins, need to cleanUpBoard() */
     cleanUpBoard(&board);
   }
-
   return 0;
 }

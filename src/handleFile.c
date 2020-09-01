@@ -1,6 +1,6 @@
 #include "floodit.h"
 
-void handleFile(Board_t *board_ptr, FILE *file){
+Result_t handleFile(Board_t *board_ptr, FILE *file){
   /* We add one to the line length to account for null byte at the end*/
   char line[MAX_LINE_LEN + 1];
   u_char boardSize = 0;
@@ -13,16 +13,21 @@ void handleFile(Board_t *board_ptr, FILE *file){
   while(fgets(line, MAX_LINE_LEN + 1, file) != NULL && !stringIsEmpty(line)){
     lineLength = getLineLength(line);
     handleLineLength(board_ptr, &boardSize, lineLength);
-    assertAllDigits(line, lineLength);
+    if(isAllDigits(line, lineLength) == false){
+      fprintf(stderr, "Board can only contain numbers 1-9\n");
+      return failed;
+    }
     fillRow(board_ptr, line, lineLength, rowCount);
     findColourCount(line, lineLength, &colourCount);
     rowCount += 1;
   }
   if(rowCount != boardSize){
     fprintf(stderr, "Board must be a square\n");
-    exit(-1);
+    return failed;
   }
   board_ptr->colourCount = colourCount;
+
+  return succeeded;
 }
 
 u_int getLineLength(char line[]){
@@ -32,23 +37,21 @@ u_int getLineLength(char line[]){
   /*Either the end of a line is a new line OR we don't want to read in anymore
     elements in a line beyond the maximum length of the board*/
   for(i = 0; line[i] != '\n' && i < MAX_BOARD_SIZE && line[i] != '\0'; i++) {}
-
   /*We don't need to do anything in the loop other than go through it to get i*/
   return i;
-
 }
 
-void assertAllDigits(char line[], u_int lineLength){
+bool isAllDigits(char line[], u_int lineLength){
   u_int i;
   for(i = 0; i < lineLength; i++){
     if(!isdigit(line[i])){
-      fprintf(stderr, "Board can only contain numbers 1-9\n");
-      exit(-1);
+      return false;
     }
   }
+  return true;
 }
 
-void handleLineLength(Board_t *board_ptr,
+Result_t handleLineLength(Board_t *board_ptr,
   u_char *boardSize_ptr,
   u_int lineLength){
   /*boardSize_ptr is the first line. When it is 0, we know it has not been set yet*/
@@ -62,8 +65,9 @@ void handleLineLength(Board_t *board_ptr,
     current length is the same as the first line*/
   else if(*boardSize_ptr != lineLength){
     fprintf(stderr, "Incorrect line length\n");
-    exit(-1);
+    return failed;
   }
+  return succeeded;
 }
 
 void fillRow(Board_t *board_ptr, char line[], u_int lineLength, u_char row){

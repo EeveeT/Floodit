@@ -106,23 +106,19 @@ Colour_t captureInputTurn(Board_t *board_ptr, int turnCounter){
 
     Colour_t turnColour = 0;
     bool askingForInput = true;
-    int inputCount = 0;
+    Result_t receivedInput;
 
     while (askingForInput) {
-      fflush(stdin);
       printf("Turn %d: What number? ", turnCounter);
-      /*
-        u  = unsigned decimal number (default u_int)
-        hh = use a char/u_char
-        We can read in a u_char and convert it into a Colout_t
-      */
-      inputCount = scanf("%hhu", &turnColour);
+
+      receivedInput = readInUChar(&turnColour);
+
       /*We only want to read in one thing from scanf, so inputCount must be 1 */
-      if(inputCount == INPUT_COUNT && isValidColour(board_ptr, turnColour)){
+      if(receivedInput == succeeded && isValidColour(board_ptr, turnColour)){
         /* Input has been found and is valid so we leave the while loop*/
         askingForInput = false;
       }
-      else if(inputCount == INPUT_COUNT){
+      else if(receivedInput == succeeded){
         printf("Please input a colour between %d and %u\n",
                 MIN_NUM_COLOURS, board_ptr->colourCount);
       }
@@ -132,4 +128,30 @@ Colour_t captureInputTurn(Board_t *board_ptr, int turnCounter){
       }
     }
     return turnColour;
+}
+
+Result_t readInUChar(u_char *inputUChar_ptr){
+
+  int inputCount = 0;
+  u_int userInput = 0;
+
+  fflush(stdin);
+
+  inputCount = scanf("%u", &userInput);
+
+  if(userInput > MAX_U_CHAR){
+    /* Way I deal with numbers over 256 is to saturate them as 255 so that
+       in captureInputTurn(), I can give a more precise error statement to
+       the user
+    */
+    userInput = MAX_U_CHAR;
+  }
+
+  if(inputCount == 1){
+    *inputUChar_ptr = userInput;
+    return succeeded;
+  }
+  else{
+    return failed;
+  }
 }

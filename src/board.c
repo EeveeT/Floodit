@@ -72,11 +72,16 @@ void assertBoardLenValid(Board_t *board_ptr){
   if(board_ptr->length < MIN_BOARD_SIZE){
     fprintf(stderr, "Board size too small, must be between 2-20.\n");
     exit(-1);
+    /* return 0;*/
   }
   if(board_ptr->length >  MAX_BOARD_SIZE){
     fprintf(stderr, "Board size too big, must be between 2-20\n");
     exit(-1);
+    /*return 0 */
   }
+  /*else{
+    return 1;
+  }*/
 }
 
 void assertColourCountValid(Board_t *board_ptr){

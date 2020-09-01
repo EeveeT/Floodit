@@ -101,6 +101,7 @@ void test(void){
   assert(testBoard.length == 10);
   assert(testBoard.colourCount == 7);
 
+  /*find a way of testing invalid (large) numbers. what happens if I set up 0?*/
 
   /*------------------------- Handle File Functions------------------------- */
   /* Declare an array but place nothing in it*/
@@ -114,7 +115,7 @@ void test(void){
   testDigit = '5';
   testColour = digitToColour(testDigit);
   assert(testColour == 5);
-  assertAllDigits(testLine, testLineLen);
+  assert(isAllDigits(testLine, testLineLen));
 
  /*Handle Line Length sets the first line length and then ensures all lines after
   the first line in a board are the same length. 10 is an arbitury random number
