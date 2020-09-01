@@ -14,7 +14,7 @@ Result_t handleFile(Board_t *board_ptr, FILE *file){
     lineLength = getLineLength(line);
     handleLineLength(board_ptr, &boardSize, lineLength);
     if(isAllDigits(line, lineLength) == false){
-      fprintf(stderr, "Board can only contain numbers 1-9\n");
+      logError("Board can only contain numbers 1-9\n");
       return failed;
     }
     fillRow(board_ptr, line, lineLength, rowCount);
@@ -22,7 +22,7 @@ Result_t handleFile(Board_t *board_ptr, FILE *file){
     rowCount += 1;
   }
   if(rowCount != boardSize){
-    fprintf(stderr, "Board must be a square\n");
+    logError("Board must be a square\n");
     return failed;
   }
   board_ptr->colourCount = colourCount;
@@ -64,7 +64,7 @@ Result_t handleLineLength(Board_t *board_ptr,
   /*For all other lines after the first line in the board, we check that the
     current length is the same as the first line*/
   else if(*boardSize_ptr != lineLength){
-    fprintf(stderr, "Incorrect line length\n");
+    logError("Incorrect line length\n");
     return failed;
   }
   return succeeded;

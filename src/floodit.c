@@ -26,3 +26,9 @@ else{
   }
   return 0;
 }
+
+void logError(char* errorMessage){
+  if(!TEST){
+    fprintf(stderr, "%s", errorMessage);
+  }
+}

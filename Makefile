@@ -1,6 +1,6 @@
 warnings = -pedantic -ansi  -Wall -Wextra -Wfloat-equal
 inc = -Iinc
-flags = -O2
+flags = -O2 -ggdb
 
 all: floodit.o board.o game.o handleArguments.o handleFile.o test.o
 	gcc $^ -o floodit

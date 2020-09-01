@@ -10,7 +10,7 @@ Result_t handleArguments(int argc, char* argv[], Board_t *board_ptr){
     case 3:
         return handleTwoArguments(board_ptr, argv[1], argv[2]);
     default:
-      fprintf(stderr, "Invalid usage\n");
+      logError("Invalid usage\n");
       return failed;
   }
 
@@ -30,7 +30,9 @@ Result_t setUpBoardWithLength(Board_t *board_ptr, u_char inputBoardLength){
   board_ptr->length = inputBoardLength;
   board_ptr->colourCount = DEFAULT_NUM_COLOURS;
 
-  assertBoardLenValid(board_ptr);
+  if(isBoardLenValid(board_ptr) == false){
+    return failed;
+  }
   setUpBoardMem(board_ptr);
   fillBoard(board_ptr);
 
@@ -44,8 +46,12 @@ Result_t setUpBoardWithLengthAndColours(Board_t *board_ptr,
   board_ptr->length = inputBoardLength;
   board_ptr->colourCount = colourCount;
 
-  assertBoardLenValid(board_ptr);
-  assertColourCountValid(board_ptr);
+  if(isBoardLenValid(board_ptr) == false){
+    return failed;
+  }
+  if(isColourCountValid(board_ptr) == false){
+    return failed;
+  }
   setUpBoardMem(board_ptr);
   fillBoard(board_ptr);
 
@@ -64,7 +70,9 @@ Result_t handleSingleArgument(Board_t *board_ptr, char *arg){
 
   file = fopen(arg, "r");
   if(file == NULL){
-    fprintf(stderr, "Error opening file %s. \n", arg);
+    logError("Error opening file ");
+    logError(arg);
+    logError("\n");
     return failed;
   }
   handledFile = handleFile(board_ptr, file);
@@ -80,12 +88,12 @@ Result_t handleTwoArguments(Board_t *board_ptr,
   u_char boardSize;
 
   if(readInUCharFromString(boardLenStr, &boardSize) == failed){
-    fprintf(stderr, "Please enter a number for board size\n");
+    logError("Please enter a number for board size\n");
     return failed;
   }
 
   if(readInUCharFromString(colourCountStr, &colourCount) == failed){
-    fprintf(stderr, "Please enter a number of colours\n");
+    logError("Please enter a number of colours\n");
     return failed;
   }
 

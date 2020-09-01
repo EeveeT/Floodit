@@ -47,8 +47,8 @@ void cleanUpBoard(Board_t *board_ptr);
 void setColourAt(Board_t *board_ptr, u_char row, u_char col, Colour_t colour);
 Colour_t getColourAt(Board_t *board_ptr, u_char row, u_char col);
 u_int getIndexFromRowCol(Board_t *board_ptr, u_char row, u_char col);
-void assertBoardLenValid(Board_t *board_ptr);
-void assertColourCountValid(Board_t *board_ptr);
+bool isBoardLenValid(Board_t *board_ptr);
+bool isColourCountValid(Board_t *board_ptr);
 void printBoard(Board_t *board_ptr);
 Colour_t generateRandomColour(Board_t *board_ptr);
 void fillBoard(Board_t *board_ptr);
@@ -95,3 +95,6 @@ Result_t readInUChar(u_char *inputUChar_ptr);
 
 /* Test Function */
 void test(void);
+
+/* Utility Function */
+void logError(char* errorMessage);

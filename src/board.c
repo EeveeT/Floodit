@@ -23,7 +23,7 @@ void setUpBoardMem(Board_t *board_ptr){
   board_ptr->colourArray = (Colour_t*)malloc(len * len * sizeof(Colour_t));
 
   if(board_ptr->colourArray == NULL){
-    fprintf(stderr, "Error, could not allocate memory for the board.\n");
+    logError("Error, could not allocate memory for the board.\n");
     exit(-1);
   }
 }
@@ -67,32 +67,33 @@ u_int getIndexFromRowCol(Board_t *board_ptr, u_char row, u_char col){
 
 }
 
-void assertBoardLenValid(Board_t *board_ptr){
+bool isBoardLenValid(Board_t *board_ptr){
 
   if(board_ptr->length < MIN_BOARD_SIZE){
-    fprintf(stderr, "Board size too small, must be between 2-20.\n");
-    exit(-1);
-    /* return 0;*/
+    logError("Board size too small, must be between 2-20.\n");
+    return false;
+
   }
   if(board_ptr->length >  MAX_BOARD_SIZE){
-    fprintf(stderr, "Board size too big, must be between 2-20\n");
-    exit(-1);
-    /*return 0 */
+    logError("Board size too big, must be between 2-20\n");
+    return false;
+
   }
-  /*else{
-    return 1;
-  }*/
+  else{
+    return true;
+  }
 }
 
-void assertColourCountValid(Board_t *board_ptr){
+bool isColourCountValid(Board_t *board_ptr){
   if(board_ptr->colourCount < MIN_NUM_COLOURS){
-    fprintf(stderr, "Colour is too small\n");
-    exit(-1);
+    logError("Colour is too small\n");
+    return false;
   }
   if(board_ptr->colourCount > MAX_NUM_COLOURS){
-    fprintf(stderr, "Colour is too large\n");
-    exit(-1);
+    logError("Colour is too large\n");
+    return false;
   }
+  return true;
 }
 
 void printBoard(Board_t *board_ptr){

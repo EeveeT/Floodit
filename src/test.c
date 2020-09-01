@@ -21,12 +21,28 @@ void test(void){
   /*----------------------------- Board Functions---------------------------- */
   /* Test for valid board length values*/
   for(testBoard.length = MIN_BOARD_SIZE; testBoard.length <= MAX_BOARD_SIZE; testBoard.length++){
-    assertBoardLenValid(&testBoard);
+    assert(isBoardLenValid(&testBoard) == true);
   }
+
+  /* Now we also test for invalid board lengths and assert they are invalid*/
+  for(testBoard.length = MAX_BOARD_SIZE + 1; testBoard.length < MAX_U_CHAR;testBoard.length++){
+    assert(isBoardLenValid(&testBoard) == false);
+  }
+
+  testBoard.length = 0;
+  assert(isBoardLenValid(&testBoard) == false);
+
   /* Test all colours up to maximum colour of 9 are valid. If this test fails
      the program will quit, thus test fail.*/
-  for(testBoard.colourCount = MIN_NUM_COLOURS; testBoard.colourCount <= MAX_NUM_COLOURS; testBoard.colourCount ++){
-    assertColourCountValid(&testBoard);
+  for(testBoard.colourCount = MIN_NUM_COLOURS; testBoard.colourCount <= MAX_NUM_COLOURS; testBoard.colourCount++){
+    assert(isColourCountValid(&testBoard) == true);
+  }
+
+  for(testBoard.colourCount = MAX_NUM_COLOURS + 1; testBoard.colourCount < MAX_U_CHAR; testBoard.colourCount++){
+    assert(isColourCountValid(&testBoard) == false);
+  }
+  for(testBoard.colourCount = 0; testBoard.colourCount < MIN_NUM_COLOURS; testBoard.colourCount++){
+    assert(isColourCountValid(&testBoard) == false);
   }
   /*Set variables to values that we can test */
   testBoard.length = DEFAULT_BOARD_SIZE;
@@ -83,6 +99,7 @@ void test(void){
       assert(isValidColour(&testBoard, testColour));
     }
   }
+  cleanUpBoard(&testBoard);
 
   /*------------------------ Handle Arguments Functions--------------------- */
 
@@ -91,15 +108,28 @@ void test(void){
   assert(testBoard.length == DEFAULT_BOARD_SIZE);
   assert(testBoard.colourCount == DEFAULT_NUM_COLOURS);
 
+  cleanUpBoard(&testBoard);
+
   /*5 is just an arbitury number for a valid board length */
-  setUpBoardWithLength(&testBoard, 5);
+  assert(setUpBoardWithLength(&testBoard, 5) == succeeded);
   assert(testBoard.length == 5);
   assert(testBoard.colourCount == DEFAULT_NUM_COLOURS);
 
+  cleanUpBoard(&testBoard);
+
+  assert(setUpBoardWithLength(&testBoard, MAX_BOARD_SIZE+1) == failed);
+  assert(setUpBoardWithLength(&testBoard, 0) == failed);
+  assert(setUpBoardWithLength(&testBoard, MAX_U_CHAR) == failed);
+
   /* Here again, testing with a random arbitury valid number for length and colourCount*/
-  setUpBoardWithLengthAndColours(&testBoard, 10, 7);
+  assert(setUpBoardWithLengthAndColours(&testBoard, 10, 7) == succeeded);
   assert(testBoard.length == 10);
   assert(testBoard.colourCount == 7);
+
+  cleanUpBoard(&testBoard);
+
+  assert(setUpBoardWithLengthAndColours(&testBoard, MAX_U_CHAR, MAX_NUM_COLOURS+1) == failed);
+  assert(setUpBoardWithLengthAndColours(&testBoard, 0, 1) == failed);
 
   /*find a way of testing invalid (large) numbers. what happens if I set up 0?*/
 
@@ -116,6 +146,8 @@ void test(void){
   testColour = digitToColour(testDigit);
   assert(testColour == 5);
   assert(isAllDigits(testLine, testLineLen));
+
+  setUpBoardMem(&testBoard);
 
  /*Handle Line Length sets the first line length and then ensures all lines after
   the first line in a board are the same length. 10 is an arbitury random number
