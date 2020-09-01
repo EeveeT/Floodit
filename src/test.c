@@ -4,6 +4,7 @@
 
 void test(void){
   Board_t testBoard;
+  Colour_t *arrayBackUp;
   u_char row;
   u_char column;
   Colour_t testColour;
@@ -16,7 +17,10 @@ void test(void){
   u_int testLineLen;
   u_char boardSize_testPtr = 0;
   Colour_t testArray[9] = {1,2,3,2,3,1,3,1,2};
-  Colour_t expectedSolutionArray[9] = {'2','2','3','2','3','1','3','1','2'};
+  Colour_t expectedSolutionArrayA[9] = {2,2,3,2,3,1,3,1,2};
+  Colour_t expectedSolutionArrayB[9] = {3,3,3,3,3,1,3,1,2};
+  Colour_t expectedSolutionArrayC[9] = {1,1,1,1,1,1,1,1,2};
+  Colour_t expectedSolutionArrayD[9] = {2,2,2,2,2,2,2,2,2};
 
   /*----------------------------- Board Functions---------------------------- */
   /* Test for valid board length values*/
@@ -195,12 +199,72 @@ void test(void){
     for(column = 0; column < testBoard.length; column++){
       /* Extract colour from expected solution */
       index = getIndexFromRowCol(&testBoard, row, column);
-      expectedSolutionColour = digitToColour(expectedSolutionArray[index]);
+      expectedSolutionColour = expectedSolutionArrayA[index];
       /* Extract colour from actual output */
       testColour = getColourAt(&testBoard, row, column);
       assert(expectedSolutionColour == testColour);
     }
   }
+  testColour = 3;
+  index = 0;
+  updateBoard(&testBoard, testColour);
+
+  for(row = 0; row < testBoard.length; row++){
+    for(column = 0; column < testBoard.length; column++){
+      index = getIndexFromRowCol(&testBoard, row, column);
+      expectedSolutionColour = expectedSolutionArrayB[index];
+      testColour = getColourAt(&testBoard, row, column);
+      assert(expectedSolutionColour == testColour);
+    }
+  }
+  testColour = 1;
+  index = 0;
+  updateBoard(&testBoard, testColour);
+
+  for(row = 0; row < testBoard.length; row++){
+    for(column = 0; column < testBoard.length; column++){
+      index = getIndexFromRowCol(&testBoard, row, column);
+      expectedSolutionColour = expectedSolutionArrayC[index];
+      testColour = getColourAt(&testBoard, row, column);
+      assert(expectedSolutionColour == testColour);
+    }
+  }
+  testColour = 2;
+  index = 0;
+  updateBoard(&testBoard, testColour);
+
+  for(row = 0; row < testBoard.length; row++){
+    for(column = 0; column < testBoard.length; column++){
+      index = getIndexFromRowCol(&testBoard, row, column);
+      expectedSolutionColour = expectedSolutionArrayD[index];
+      testColour = getColourAt(&testBoard, row, column);
+      assert(expectedSolutionColour == testColour);
+    }
+  }
+  assert(checkIfWon(&testBoard));
+  cleanUpBoard(&testBoard);
+
+  testBoard.length = 5;
+  testBoard.colourCount = 5;
+  setUpBoardMem(&testBoard);
+  fillBoard(&testBoard);
+
+  arrayBackUp = (Colour_t*)malloc(testBoard.length * testBoard.length * sizeof(Colour_t));
+  memcpy(arrayBackUp, testBoard.colourArray, testBoard.length * testBoard.length * sizeof(Colour_t));
+
+  /*Check that the board state does not change when given invalid coordinates*/
+
+  updateBoardRecursive(&testBoard, 6, 4, 3, 2);
+
+  assert(memcmp(arrayBackUp, testBoard.colourArray, testBoard.length * testBoard.length * sizeof(Colour_t)) == 0);
+
+
+
+
+
+
+
+
 
 /*------------------------------- End of Tests------------------------------- */
 
