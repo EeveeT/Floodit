@@ -133,7 +133,10 @@ Result_t readInUChar(u_char *inputUChar_ptr){
   int inputCount = 0;
   u_int userInput = 0;
 
+  fflush(stdin);
   inputCount = scanf(" %u", &userInput);
+
+  printf("inputCount: %d\n", inputCount);
 
   if(userInput > MAX_U_CHAR){
     /* Way I deal with numbers over 256 is to saturate them as 255 so that
@@ -144,11 +147,12 @@ Result_t readInUChar(u_char *inputUChar_ptr){
   }
 
   if(inputCount == 1){
+    printf("woo");
     *inputUChar_ptr = userInput;
     return succeeded;
   }
   else{
-    fflush(stdin);
+    printf(":(\n");
     return failed;
   }
 }
