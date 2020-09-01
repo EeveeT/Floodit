@@ -1,12 +1,14 @@
 #include "floodit.h"
 
-/* COL ROW NEEDS TO BE REVERSED */
+#ifndef TEST
+  #define TEST 0
+#endif
 
 int main (int argc, char *argv[]){
-
-  #ifdef TEST
+  if(TEST){
     test();
-  #else
+  }
+else{
     /*  This is the real board we always want to use, hence why it is in main,
         and this is why we always have to send a pointer to other functions to
         THIS board here in main
@@ -21,7 +23,7 @@ int main (int argc, char *argv[]){
     runGame(&board);
     /*When user quits or wins, need to cleanUpBoard() */
     cleanUpBoard(&board);
-  #endif
+  }
 
   return 0;
 }

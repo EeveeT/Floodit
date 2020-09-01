@@ -12,6 +12,6 @@ clean:
 	rm -f *.o
 	rm -f floodit
 
-test: flags += -DTEST
+test: flags += -DTEST=1
 test: | clean all
 	./floodit

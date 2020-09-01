@@ -153,10 +153,8 @@ void test(void){
 
   testColour = 2;
   index = 0;
-  printBoard(&testBoard);
   updateBoard(&testBoard, testColour);
 
-  printBoard(&testBoard);
   for(row = 0; row < testBoard.length; row++){
     for(column = 0; column < testBoard.length; column++){
       /* Extract colour from expected solution */

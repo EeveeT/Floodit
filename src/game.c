@@ -104,9 +104,9 @@ void updateBoardRecursive(
 
 Colour_t captureInputTurn(Board_t *board_ptr, int turnCounter){
 
-    Colour_t turnColour;
+    Colour_t turnColour = 0;
     bool askingForInput = true;
-    int inputCount;
+    int inputCount = 0;
 
     while (askingForInput) {
       fflush(stdin);
