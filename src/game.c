@@ -130,29 +130,13 @@ Colour_t captureInputTurn(Board_t *board_ptr, int turnCounter){
 
 Result_t readInUChar(u_char *inputUChar_ptr){
 
-  int inputCount = 0;
-  u_int userInput = 0;
+  char line[MAX_LINE_LEN];
+  memset(line, '\0', MAX_LINE_LEN);
 
-  fflush(stdin);
-  inputCount = scanf(" %u", &userInput);
-
-  printf("inputCount: %d\n", inputCount);
-
-  if(userInput > MAX_U_CHAR){
-    /* Way I deal with numbers over 256 is to saturate them as 255 so that
-       in captureInputTurn(), I can give a more precise error statement to
-       the user
-    */
-    userInput = MAX_U_CHAR;
-  }
-
-  if(inputCount == 1){
-    printf("woo");
-    *inputUChar_ptr = userInput;
-    return succeeded;
-  }
-  else{
-    printf(":(\n");
+  if(fgets(line, MAX_LINE_LEN, stdin) == NULL){
     return failed;
   }
+
+  return readInUCharFromString(line, inputUChar_ptr);
+
 }
