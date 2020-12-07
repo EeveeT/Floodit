@@ -13,4 +13,5 @@ To run the current code, you will need:
 - Makefile
 
 To run the code, make sure you are in the correct working directory in command line/terminal and type: ```make```
-Do be aware there are many warnings and errors at the minute, I am working on resolving these. 
+
+Final grade for this assingment was 74 (Distinction)
